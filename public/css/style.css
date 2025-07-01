@@ -1,0 +1,101 @@
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 80px; /* room for bottom nav */
+}
+
+.header {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.section {
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  color: #4CAF50;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.call-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.call-entry:last-child {
+  border-bottom: none;
+}
+
+.call-info {
+  flex-grow: 1;
+}
+
+.call-status {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.call-status.missed {
+  color: #f44336;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  z-index: 100;
+}
+
+.nav-button {
+  text-align: center;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.nav-button.active {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}

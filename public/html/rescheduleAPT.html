@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Management Dashboard</title>
+    <link rel="stylesheet" href="/public/css/actions.css" />
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="profile.html" class="back-btn" style="text-decoration: none;">← Back</a>
+            <h1>Medical Management Dashboard</h1>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Upcoming Appointments</h2>
+            <button class="btn" id="addAppointmentBtn">Schedule New Appointment</button>
+            <table id="appointmentsTable">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Doctor</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-06-15 10:30 AM</td>
+                        <td>Dr. Johnson</td>
+                        <td>Follow-up</td>
+                        <td>Confirmed</td>
+                        <td>
+                            <button class="btn reschedule-appointment-btn">Reschedule</button>
+                            <button class="btn btn-danger cancel-appointment-btn">Cancel</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    <div id="rescheduleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Reschedule Appointment</h2>
+            <form id="rescheduleForm">
+                <div class="form-group">
+                    <label for="newDate">New Date</label>
+                    <input type="date" id="newDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="newTime">New Time</label>
+                    <input type="time" id="newTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="rescheduleReason">Reason</label>
+                    <textarea id="rescheduleReason" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn">Confirm Reschedule</button>
+            </form>
+        </div>
+    </div>
+ <script src="/public/js/rescheduleAPT.js"></script>
+</body>
+</html>

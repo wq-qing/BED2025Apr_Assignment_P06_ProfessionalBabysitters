@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Management Dashboard</title>
+    <link rel="stylesheet" href="/public/css/actions.css" />
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="profile.html" class="back-btn" style="text-decoration: none;">← Back</a>
+            <h1>Medical Management Dashboard</h1>
+        </div>
+
+<div class="section">
+            <h2 class="section-title">Medical Documents</h2>
+            <button class="btn" id="uploadDocBtn">Upload New Document</button>
+            <table id="documentsTable">
+                <thead>
+                    <tr>
+                        <th>Document Name</th>
+                        <th>Type</th>
+                        <th>Date Issued</th>
+                        <th>Doctor</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Medical Certificate - June 2024</td>
+                        <td>Work Leave</td>
+                        <td>2024-06-10</td>
+                        <td>Dr. Smith</td>
+                        <td>
+                            <button class="btn view-doc-btn">View</button>
+                            <button class="btn">Download</button>
+                            <button class="btn btn-danger delete-doc-btn">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+</div>
+
+<div id="viewDocModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Medical Certificate - June 2024</h2>
+            <div style="border: 1px solid #ddd; padding: 15px; margin-top: 15px;">
+                <p><strong>Doctor:</strong> Dr. Smith</p>
+                <p><strong>Issued Date:</strong> June 10, 2024</p>
+                <p><strong>Notes:</strong> Patient is advised to take 3 days of rest.</p>
+                <img src="placeholder-certificate.jpg" alt="Medical Certificate" style="width: 100%; margin-top: 10px;">
+            </div>
+            <button class="btn" style="margin-top: 15px;">Download</button>
+        </div>
+    </div>
+ <script src="/public/js/document.js"></script>
+</body>
+</html>

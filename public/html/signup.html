@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Lexend:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+
+  <body
+    class="min-h-screen bg-white flex items-center justify-center"
+    style='font-family: Lexend, "Noto Sans", sans-serif;'
+  >
+    <div class="w-full max-w-md p-6">
+      <h2 class="text-[#111518] text-[28px] font-bold leading-tight text-center pb-3">
+        Create your account
+      </h2>
+
+      <!-- Full Name -->
+      <div class="flex flex-wrap items-end gap-4 py-3">
+        <label class="flex flex-col w-full">
+          <input
+            placeholder="Full Name"
+            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
+          />
+        </label>
+      </div>
+
+      <!-- Email -->
+      <div class="flex flex-wrap items-end gap-4 py-3">
+        <label class="flex flex-col w-full">
+          <input
+            placeholder="Email"
+            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
+          />
+        </label>
+      </div>
+
+      <!-- Password -->
+      <div class="flex flex-wrap items-end gap-4 py-3">
+        <label class="flex flex-col w-full">
+          <input
+            placeholder="Password"
+            type="password"
+            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
+          />
+        </label>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="flex flex-wrap items-end gap-4 py-3">
+        <label class="flex flex-col w-full">
+          <input
+            placeholder="Confirm Password"
+            type="password"
+            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
+          />
+        </label>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="flex flex-wrap gap-3 py-4">
+        <label
+          class="text-sm font-medium leading-normal flex items-center justify-center rounded-xl border border-[#dbe1e6] px-4 h-11 text-[#111518] has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#0b80ee] relative cursor-pointer"
+        >
+          Doctor
+          <input type="radio" class="invisible absolute" name="role" />
+        </label>
+        <label
+          class="text-sm font-medium leading-normal flex items-center justify-center rounded-xl border border-[#dbe1e6] px-4 h-11 text-[#111518] has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#0b80ee] relative cursor-pointer"
+        >
+          Elderly User
+          <input type="radio" class="invisible absolute" name="role" />
+        </label>
+      </div>
+
+      <!-- Register Button -->
+      <div class="py-3">
+        <button
+          class="w-full h-12 px-5 rounded-full bg-[#0b80ee] text-white text-base font-bold tracking-[0.015em] hover:bg-[#0a6fd1] transition-colors"
+        >
+          Register
+        </button>
+      </div>
+
+      <!-- Already have an account -->
+       <a href="login.html">
+      <p class="text-[#60768a] text-sm text-center underline py-1 cursor-pointer">
+        Already have an account? Login
+      </p>
+      </a>
+    </div>
+  </body>
+</html>

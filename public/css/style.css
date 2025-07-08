@@ -96,6 +96,10 @@ body {
   margin-bottom: 15px;
 }
 
+#scheduleAppointmentBtn {
+  margin-right: 299px;
+}
+
 .btn:hover {
   background-color: #45a049;
 }

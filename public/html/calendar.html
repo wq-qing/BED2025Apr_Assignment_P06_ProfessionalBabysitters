@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Appointment Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .grid button {
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Step 1: Select Date -->
+    <div id="step1">
+      <h1>Select Appointment Date</h1>
+      <input type="date" id="selectDate" min="2025-01-01" />
+      <button id="toStep2" disabled>Next</button>
+    </div>
+
+    <!-- Step 2: Select Time -->
+    <div id="step2" class="hidden">
+      <h1>Select Time Slot</h1>
+      <div id="timeSlots" class="grid"></div>
+    </div>
+
+    <!-- Step 3: Confirm -->
+    <div id="step3" class="hidden">
+      <h1>Confirm Appointment</h1>
+      <p id="confirmationDetails"></p>
+      <label for="doctor">Select Doctor:</label>
+      <select id="doctor">
+        <option>Dr. Tan</option>
+        <option>Dr. Lee</option>
+        <option>Dr. Lim</option>
+      </select>
+      <button id="confirmBtn">Confirm Appointment</button>
+    </div>
+  </div>
+
+  <script>
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const step3 = document.getElementById("step3");
+
+    const selectDate = document.getElementById("selectDate");
+    const toStep2 = document.getElementById("toStep2");
+    const timeSlots = document.getElementById("timeSlots");
+    const confirmationDetails = document.getElementById("confirmationDetails");
+    const doctorSelect = document.getElementById("doctor");
+
+    let selectedDate = "";
+    let selectedTime = "";
+
+    // Step 1: Select Date
+    selectDate.addEventListener("change", () => {
+      toStep2.disabled = !selectDate.value;
+    });
+
+    toStep2.addEventListener("click", () => {
+      selectedDate = selectDate.value;
+      step1.classList.add("hidden");
+      step2.classList.remove("hidden");
+      generateTimeSlots();
+    });
+
+    // Step 2: Select Time Slot
+    function generateTimeSlots() {
+      timeSlots.innerHTML = "";
+      const start = 9;
+      const end = 18;
+      const skipHour = 12;
+
+      for (let h = start; h < end; h++) {
+        if (h === skipHour) continue;
+        for (let m = 0; m < 60; m += 15) {
+          const hour = h.toString().padStart(2, "0");
+          const min = m.toString().padStart(2, "0");
+          const timeStr = `${hour}:${min}`;
+          const btn = document.createElement("button");
+          btn.textContent = timeStr;
+          btn.onclick = () => {
+            selectedTime = timeStr;
+            step2.classList.add("hidden");
+            step3.classList.remove("hidden");
+            confirmationDetails.textContent = `Your appointment is on ${selectedDate} at ${selectedTime}`;
+          };
+          timeSlots.appendChild(btn);
+        }
+      }
+    }
+
+    // Step 3: Confirm
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      const selectedDoctor = doctorSelect.value;
+      alert(`✅ Appointment confirmed with ${selectedDoctor} on ${selectedDate} at ${selectedTime}`);
+      // Reset
+      selectDate.value = "";
+      toStep2.disabled = true;
+      step3.classList.add("hidden");
+      step1.classList.remove("hidden");
+    });
+  </script>
+</body>
+</html>

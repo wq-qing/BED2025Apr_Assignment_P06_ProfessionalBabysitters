@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,11 +7,7 @@
   <title>Appointment Booking</title>
 
   <!-- load your calendar.css -->
-  <link
-    rel="stylesheet"
-    href="../CSS/calendar.css"
-    type="text/css"
-  />
+  <link rel="stylesheet" href="../CSS/calendar.css" type="text/css"/>
 
   <style>
     body {
@@ -64,6 +61,25 @@
       margin-top: 20px;
       margin-bottom: 5px;
     }
+
+    /* Toast styling */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    .toast.show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -107,139 +123,11 @@
 
       <p class="small-text">Want to make a change of the time slot?</p>
       <button id="changeTimingBtn">Change Timing</button>
-
       <button id="backToStep2From4">Back</button>
     </div>
   </div>
 
-  <script>
-    // Steps
-    const step1 = document.getElementById("step1");
-    const step2 = document.getElementById("step2");
-    const step3 = document.getElementById("step3");
-    const step4 = document.getElementById("step4");
-
-    // Step1 elems
-    const selectDate = document.getElementById("selectDate");
-    const toStep2    = document.getElementById("toStep2");
-
-    // Step2 elems
-    const backToStep1 = document.getElementById("backToStep1");
-    const timeSlots   = document.getElementById("timeSlots");
-
-    // Step3 elems
-    const backToStep2         = document.getElementById("backToStep2");
-    const confirmationDetails = document.getElementById("confirmationDetails");
-    const doctorSelect        = document.getElementById("doctor");
-    const confirmBtn          = document.getElementById("confirmBtn");
-
-    // Step4 elems
-    const sumDoctor        = document.getElementById("sumDoctor");
-    const sumDate          = document.getElementById("sumDate");
-    const sumTime          = document.getElementById("sumTime");
-    const changeTimingBtn  = document.getElementById("changeTimingBtn");
-    const backToStep2From4 = document.getElementById("backToStep2From4");
-
-    let selectedDate = "", selectedTime = "";
-
-    // Prevent past date
-    selectDate.min = new Date().toISOString().split("T")[0];
-
-    // Step1 → Step2
-    selectDate.addEventListener("change", () => {
-      toStep2.disabled = !selectDate.value;
-    });
-    toStep2.addEventListener("click", () => {
-      selectedDate = selectDate.value;
-      step1.classList.add("hidden");
-      step2.classList.remove("hidden");
-      generateTimeSlots();
-    });
-
-    // Back to Step1
-    backToStep1.addEventListener("click", () => {
-      step2.classList.add("hidden");
-      step1.classList.remove("hidden");
-    });
-
-    // Generate time slots
-    function generateTimeSlots() {
-      timeSlots.innerHTML = "";
-      const start    = 9, end = 18, skipHour = 12;
-      const now      = new Date();
-      const todayStr = now.toISOString().split("T")[0];
-      const cutoff   = new Date(now.getTime() + 15*60*1000);
-
-      for (let h = start; h < end; h++) {
-        if (h === skipHour) continue;
-        for (let m = 0; m < 60; m += 15) {
-          const minute = String(m).padStart(2,"0");
-          const slotDt = new Date(`${selectedDate}T${String(h).padStart(2,"0")}:${minute}:00`);
-          const isPast = selectedDate===todayStr && slotDt<cutoff;
-          const hour12 = h%12||12, suffix = h<12?"am":"pm";
-          const label  = `${hour12}:${minute} ${suffix}`;
-
-          const btn = document.createElement("button");
-          btn.textContent = label;
-          if (isPast) btn.disabled = true;
-          btn.onclick = () => {
-            if (isPast) return;
-            selectedTime = label;
-            step2.classList.add("hidden");
-            step3.classList.remove("hidden");
-            confirmationDetails.textContent =
-              `Your appointment is on ${selectedDate} at ${selectedTime}`;
-          };
-          timeSlots.appendChild(btn);
-        }
-      }
-    }
-
-    // Back to Step2
-    backToStep2.addEventListener("click", () => {
-      step3.classList.add("hidden");
-      step2.classList.remove("hidden");
-    });
-
-    // Step3 → Step4 summary
-    confirmBtn.addEventListener("click", () => {
-      const doctor = doctorSelect.value;
-      const dObj   = new Date(selectedDate);
-      const fullDate = dObj.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric', year:'numeric'});
-
-      const [tp, suf] = selectedTime.split(' ');
-      let [h12, mn]   = tp.split(':');
-      h12 = parseInt(h12,10);
-      let h24 = suf==='pm'? (h12%12)+12 : h12%12;
-      const slotDt = new Date(`${selectedDate}T${String(h24).padStart(2,'0')}:${mn}:00`);
-      const endDt  = new Date(slotDt.getTime()+14*60000);
-      const fmt = dt => {
-        let h=dt.getHours(), m=dt.getMinutes(), s=h<12?'am':'pm';
-        h=h%12||12;
-        return m===0?`${h}${s}`:`${h}:${String(m).padStart(2,'0')}${s}`;
-      };
-      const range = `${fmt(slotDt)} - ${fmt(endDt)}`;
-
-      sumDoctor.textContent = doctor;
-      sumDate.textContent   = fullDate;
-      sumTime.textContent   = range;
-
-      step3.classList.add("hidden");
-      step4.classList.remove("hidden");
-    });
-
-    // Change Timing → Step2
-    changeTimingBtn.addEventListener("click", () => {
-      step4.classList.add("hidden");
-      step2.classList.remove("hidden");
-    });
-
-    // Back from Step4 → Step1 (date page)
-    backToStep2From4.addEventListener("click", () => {
-      step4.classList.add("hidden");
-      step1.classList.remove("hidden");
-    });
-  </script>
+  <!-- external JS -->
+  <script src="../JS/calendar.js"></script>
 </body>
 </html>
-

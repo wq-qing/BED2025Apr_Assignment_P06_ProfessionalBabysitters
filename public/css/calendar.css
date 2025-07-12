@@ -1,0 +1,114 @@
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: #eef2f5;
+  margin: 0;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 520px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+input[type="date"],
+select {
+  width: 100%;
+  padding: 14px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}
+
+input[type="date"]:focus,
+select:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+button {
+  font-size: 1rem;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
+
+#toStep2,
+#confirmBtn {
+  background-color: #4caf50;
+  color: white;
+}
+
+#backToStep1,
+#backToStep2,
+#backToStep2From4 {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+#changeTimingBtn {
+  background-color: #ffa000;
+  color: white;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.grid button {
+  background: #fafafa;
+  border: 1px solid #ccc;
+}
+
+.grid button:hover:not(:disabled) {
+  background: #f1f1f1;
+}
+
+.grid button:disabled {
+  background: #fafafa;
+  color: #bbb;
+}
+
+.small-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+/* Centered summary buttons */
+#changeTimingBtn,
+#backToStep2From4 {
+  width: 60%;
+  margin: 12px auto;
+  display: block;
+}

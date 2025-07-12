@@ -1,0 +1,30 @@
+{
+  "name": "video-call",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "devStart": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wq-qing/BED2025Apr_Assignment_P06_ProfessionalBabysitters.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wq-qing/BED2025Apr_Assignment_P06_ProfessionalBabysitters/issues"
+  },
+  "homepage": "https://github.com/wq-qing/BED2025Apr_Assignment_P06_ProfessionalBabysitters#readme"
+}

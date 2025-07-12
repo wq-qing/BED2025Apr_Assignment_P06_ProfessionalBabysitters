@@ -1,0 +1,133 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Appointment Booking</title>
+
+  <!-- load your calendar.css -->
+  <link rel="stylesheet" href="../CSS/calendar.css" type="text/css"/>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+      text-align: center;
+    }
+    .hidden { display: none; }
+    input, select, button {
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .grid button {
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .grid button:disabled {
+      background-color: #eee;
+      color: #999;
+      cursor: not-allowed;
+    }
+    /* Centered summary buttons */
+    #backToStep2From4,
+    #changeTimingBtn {
+      width: 50%;
+      margin: 20px auto 0;
+      display: block;
+    }
+    /* small-font prompt above Change Timing */
+    .small-text {
+      font-size: 0.85em;
+      color: #555;
+      margin-top: 20px;
+      margin-bottom: 5px;
+    }
+
+    /* Toast styling */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Step 1: Select Date -->
+    <div id="step1">
+      <h1>Select Appointment Date</h1>
+      <input type="date" id="selectDate" />
+      <button id="toStep2" disabled>Next</button>
+    </div>
+
+    <!-- Step 2: Select Time -->
+    <div id="step2" class="hidden">
+      <h1>Select Time Slot</h1>
+      <button id="backToStep1">Back</button>
+      <div id="timeSlots" class="grid"></div>
+    </div>
+
+    <!-- Step 3: Select Doctor -->
+    <div id="step3" class="hidden">
+      <h1>Confirm Appointment</h1>
+      <button id="backToStep2">Back</button>
+      <p id="confirmationDetails"></p>
+      <label for="doctor">Select Doctor:</label>
+      <select id="doctor">
+        <option>Doctor John, M</option>
+        <option>Doctor Dixie, F</option>
+        <option>Doctor Annie, F</option>
+        <option>Doctor Mae, F</option>
+        <option>Doctor Laura, F</option>
+      </select>
+      <button id="confirmBtn">Confirm Appointment</button>
+    </div>
+
+    <!-- Step 4: Summary -->
+    <div id="step4" class="hidden">
+      <h1>This Consultation is scheduled</h1>
+      <p><strong>Doctor:</strong> <span id="sumDoctor"></span></p>
+      <p><strong>Date:</strong>   <span id="sumDate"></span></p>
+      <p><strong>Time:</strong>   <span id="sumTime"></span></p>
+
+      <p class="small-text">Want to make a change of the time slot?</p>
+      <button id="changeTimingBtn">Change Timing</button>
+      <button id="backToStep2From4">Back</button>
+    </div>
+  </div>
+
+  <!-- external JS -->
+  <script src="../JS/calendar.js"></script>
+</body>
+</html>

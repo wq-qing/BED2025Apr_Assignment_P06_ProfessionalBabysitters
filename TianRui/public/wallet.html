@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wallet</title>
+</head>
+<body>
+  <h2><h2>Current Wallet Balance: $<span id="walletBalance">0.00</span></h2></h2>
+  <button type="button" id="usePrevCardBtn">Use Previous Card</button><br/><br/>
+  <form id="topup-form">
+    <input type="text" id="cardNumber" placeholder="Card Number" required /><br/>
+    <input type="text" id="expiryDate" placeholder="Expiry Date (MM/YY)" required /><br/>
+    <input type="text" id="cvv" placeholder="CVV" required /><br/>
+    <input type="number" id="topupAmount" placeholder="Top-up Amount" required /><br/>
+    <button type="submit">Top Up</button>
+  </form>
+
+  <hr/>
+
+  <h2>Pay with Wallet</h2>
+  <form id="pay-form">
+    <input type="number" id="payAmount" placeholder="Payment Amount" required /><br/>
+    <button type="submit">Pay</button>
+  </form>
+
+  <h3>Last 3 Transactions</h3>
+  <ul id="transactionList">
+  <li>Loading...</li>
+  </ul>
+
+  <script src="wallet.js"></script>
+</body>
+</html>

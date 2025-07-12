@@ -2,8 +2,7 @@ const express = require('express')
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-const { v4: uuidV4 } = require('uuid') // Only if you want to use it
-const { ExpressPeerServer } = require('peer');
+const { v4: uuidV4 } = require('uuid')
 
 app.set('view engine', 'ejs')
 app.set('views', './views')

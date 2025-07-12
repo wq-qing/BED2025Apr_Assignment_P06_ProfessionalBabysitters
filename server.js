@@ -3,10 +3,17 @@ const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid') // Only if you want to use it
+const { ExpressPeerServer } = require('peer');
 
 app.set('view engine', 'ejs')
 app.set('views', './views')
 app.use(express.static('public'))
+
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+  path: '/peerjs'
+})
+app.use('/peerjs', peerServer)
 
 app.get('/', (req, res) => {
   res.redirect('/main-room')  // Hardcoded room

@@ -1,74 +1,24 @@
-//Jay
-require('dotenv').config();
-
 const express = require('express')
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-const { v4: uuidV4 } = require('uuid')
-const { ExpressPeerServer } = require('peer')
-const jwt = require('jsonwebtoken');
+// const { v4: uuidV4 } = require('uuid') [use for multiple rooms]
+// const { ExpressPeerServer } = require('peer');
 
 app.set('view engine', 'ejs')
 app.set('views', './views')
 app.use(express.static('public'))
 app.use(express.json())
 
+// app.get('/', (req,res) => {
+//     res.redirect(`/${uuidV4()}`)
+// })
 
-const peerServer = ExpressPeerServer(server, {
-  debug: true,
-  path: '/peerjs'
-})
-app.use('/peerjs', peerServer)
-
-// Jayden's sample API
-const posts = [
-  { username: 'Kyle', title: 'Post 1' },
-  { username: 'Jim', title: 'Post 2' }
-]
-
-
-app.get('/posts', authenticateToken, (req, res) => {
-  res.json(posts.filter(post => post.username === req.user.name))
-})
-
-let refreshTokens = []
-
-app.post('/token', (req,res) => {
-  const refreshToken = req.body.token
-  if (refreshToken == null ) return res.sendStatus(401)
-  if (refreshTokens.includes(refreshToken)) return res.sendStatus(403)
-  jwt.verify(refreshToken, process,env.REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403)
-      const accessToken = generateAccessToken({ name: user.name })
-    res.json({ accessToken: accessToken })
-  })
-})
-
-//Authentication 
-app.delete('/logout', (req,res) => {
-  refreshTokens = refreshTokens.filter(token => token !== req.body.token)
-  res.sendStatus(204)
-})
-app.post('/login',(req,res) => {
-  // Authenticate User
-
-  const username = req.body.username
-  const user = { name: username }
-
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-  res.json({ accessToken: accessToken, refreshToken: refreshToken })
-
-})
-
-function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m'})
-}
-// Routes
 app.get('/', (req, res) => {
-  res.redirect('/main-room') // Hardcoded room for now
+  res.redirect('/main-room') //hardcoded for now
 })
+
+
 app.get('/:room', (req, res) => {
   res.render('room', { roomId: req.params.room })
 })
@@ -86,21 +36,33 @@ function authenticateToken(req,res,next) {
   })
 }
 
-// Socket.io handling
+// Socket.io
 io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
+    socket.on('join-room', (roomId, userId) => {
+    if (!roomId || !userId) {
+        console.error("❌ Missing roomId or userId:", roomId, userId)
+        return
+    }
+
+    console.log(`✅ ${userId} joined room ${roomId}`) //console logs to test if a new user is being logged
     socket.join(roomId)
-    socket.to(roomId).emit('user-connected', userId)
-    console.log('User connected:', userId)
+
+    setTimeout(() => { //it keeps trying to broadcast a room before the socket has actually joined it
+        try {
+            socket.to(roomId).emit('user-connected', userId)
+        } catch (e) {
+            console.error("❌ Failed to emit user-connected:", e)
+        }
+    }, 100)
 
     socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', userId)
+        socket.to(roomId).emit('user-disconnected', userId)
     })
-  })
 })
 
-// Start server
-const PORT = process.env.PORT || 3000
+})
+
+const PORT = process.env.PORT || 3000 // deafults to this for local, uses other port from other servers to run when
 server.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })

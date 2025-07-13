@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const walletRoute = require("./routes/walletRoute");
 const paymentRoute = require("./routes/paymentRoute");
-console.log("🚀 walletServer.js started");
+console.log("walletServer.js started");
 
 
 const app = express();
@@ -18,7 +18,7 @@ mongoose.connect("mongodb+srv://ZariaLxss:5iPhPZXrEuxqMDBL@wallet.7grkver.mongod
 app.use("/wallet", walletRoute);
 app.use("/payment", paymentRoute);
 
-console.log("✅ Routes registered");
+console.log("Routes registered");
 
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");

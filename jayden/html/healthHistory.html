@@ -56,65 +56,111 @@
   </div>
 
   <!-- CRUD Script -->
-  <script>
-    async function saveCondition() {
-      const name = document.getElementById("conditionName").value;
-      const startDate = document.getElementById("startDate").value;
-      const status = document.getElementById("status").value;
-      const notes = document.getElementById("notes").value;
+  <!-- 🧠 You already have the same <head> part, no changes needed there -->
 
-      const res = await fetch('http://localhost:3001/api/conditions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, startDate, status, notes })
-      });
+<!-- 🔁 Inside <body> – update the script at the end -->
+<script>
+  let editingId = null; // Keeps track of the condition being edited
 
-      if (res.ok) {
-        alert("✅ Saved");
-        loadConditions();
-      } else {
-        alert("❌ Failed to save");
-      }
+  async function saveCondition() {
+    const name = document.getElementById("conditionName").value;
+    const startDate = document.getElementById("startDate").value;
+    const status = document.getElementById("status").value;
+    const notes = document.getElementById("notes").value;
+
+    const payload = { name, startDate, status, notes };
+
+    const url = editingId
+      ? `http://localhost:3001/api/conditions/${editingId}`
+      : 'http://localhost:3001/api/conditions';
+
+    const method = editingId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      alert(editingId ? "✅ Updated" : "✅ Saved");
+      clearForm();
+      loadConditions();
+    } else {
+      alert("❌ Failed to save");
     }
+  }
 
-    async function loadConditions() {
-      const res = await fetch('http://localhost:3001/api/conditions');
-      const data = await res.json();
-      const list = document.getElementById("conditionList");
-      list.innerHTML = '';
+  function populateForm(cond) {
+    document.getElementById("conditionName").value = cond.name;
+    document.getElementById("startDate").value = cond.startDate.split('T')[0]; // trim time
+    document.getElementById("status").value = cond.status;
+    document.getElementById("notes").value = cond.notes;
+    editingId = cond.id;
 
-      data.forEach(cond => {
-        const div = document.createElement("div");
-        div.className = "flex justify-between items-center bg-white p-4 rounded-xl shadow";
+    // Show cancel button
+    document.getElementById("cancelBtn").classList.remove("hidden");
+  }
 
-        div.innerHTML = `
-          <div>
-            <p class="text-base font-medium">${cond.name}</p>
-            <p class="text-sm text-[#60758a]">${cond.status}</p>
-          </div>
-          <button onclick="deleteCondition(${cond.id})"
-            class="bg-[#f0f2f5] text-sm px-4 py-2 rounded-xl text-[#111418]">
-            Delete
-          </button>
-        `;
+  function clearForm() {
+    document.getElementById("conditionName").value = '';
+    document.getElementById("startDate").value = '';
+    document.getElementById("status").value = '';
+    document.getElementById("notes").value = '';
+    editingId = null;
+    document.getElementById("cancelBtn").classList.add("hidden");
+  }
 
-        list.appendChild(div);
-      });
+  async function loadConditions() {
+    const res = await fetch('http://localhost:3001/api/conditions');
+    const data = await res.json();
+    const list = document.getElementById("conditionList");
+    list.innerHTML = '';
+
+    data.forEach(cond => {
+      const div = document.createElement("div");
+      div.className = "flex justify-between items-center bg-white p-4 rounded-xl shadow cursor-pointer";
+      div.onclick = () => populateForm(cond); // enable editing
+
+      div.innerHTML = `
+        <div>
+          <p class="text-base font-medium">${cond.name}</p>
+          <p class="text-sm text-[#60758a]">${cond.status}</p>
+          <p class="text-xs text-gray-400">${cond.startDate?.split('T')[0]}</p>
+          <p class="text-xs text-gray-500 italic">${cond.notes}</p>
+        </div>
+        <button onclick="event.stopPropagation(); deleteCondition(${cond.id})"
+          class="bg-[#f0f2f5] text-sm px-4 py-2 rounded-xl text-[#111418]">
+          Delete
+        </button>
+      `;
+
+      list.appendChild(div);
+    });
+  }
+
+  async function deleteCondition(id) {
+    const res = await fetch(`http://localhost:3001/api/conditions/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (res.ok) {
+      clearForm();
+      loadConditions();
+    } else {
+      alert("❌ Delete failed");
     }
+  }
 
-    async function deleteCondition(id) {
-      const res = await fetch(`http://localhost:3001/api/conditions/${id}`, {
-        method: 'DELETE'
-      });
+  window.onload = loadConditions;
+</script>
 
-      if (res.ok) {
-        loadConditions();
-      } else {
-        alert("❌ Delete failed");
-      }
-    }
+<!-- 🔁 Below your "Save" button, insert this extra cancel button -->
+<div class="flex px-4 py-1 justify-end">
+  <button id="cancelBtn" onclick="clearForm()" class="hidden text-sm px-4 py-2 rounded-xl text-[#248bf3] font-medium border border-[#248bf3]">
+    Cancel Edit
+  </button>
+</div>
 
-    window.onload = loadConditions;
-  </script>
 </body>
 </html>

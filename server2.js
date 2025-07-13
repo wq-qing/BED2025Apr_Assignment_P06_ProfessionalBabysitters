@@ -97,6 +97,28 @@ app.delete('/api/conditions/:id', async (req, res) => {
   }
 });
 
+// CRUD: Update condition by ID
+app.put('/api/conditions/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, startDate, status, notes } = req.body;
+
+  try {
+    await poolConnect;
+    await pool.request()
+      .input('id', sql.Int, id)
+      .input('name', sql.NVarChar, name)
+      .input('startDate', sql.Date, startDate)
+      .input('status', sql.NVarChar, status)
+      .input('notes', sql.NVarChar, notes)
+      .query('UPDATE Conditions SET name=@name, startDate=@startDate, status=@status, notes=@notes WHERE id=@id');
+
+    res.json({ message: 'Condition updated' });
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`✅ server2.js running on http://localhost:${PORT}`);

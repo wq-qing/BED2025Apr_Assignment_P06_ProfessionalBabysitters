@@ -37,9 +37,9 @@ mongoose.connect("mongodb+srv://ZariaLxss:5iPhPZXrEuxqMDBL@wallet.7grkver.mongod
       },
     ]);
 
-    console.log("✅ Transactions seeded.");
+    console.log("Transactions seeded.");
   } catch (err) {
-    console.error("❌ Error seeding transactions:", err);
+    console.error("Error seeding transactions:", err);
   } finally {
     mongoose.disconnect();
   }

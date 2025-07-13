@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Health History Tracker</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link
+    rel="stylesheet"
+    as="style"
+    onload="this.rel='stylesheet'"
+    href="https://fonts.googleapis.com/css2?display=swap&family=Lexend:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
+  />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body>
+  <div class="relative flex min-h-screen flex-col bg-white overflow-x-hidden" style="font-family: Lexend, 'Noto Sans', sans-serif;">
+    <div class="layout-container flex h-full grow flex-col">
+      <div class="px-40 flex flex-1 justify-center py-5">
+        <div class="flex flex-col w-[512px] py-5 flex-1">
+          <div class="flex justify-between gap-3 p-4">
+            <p class="text-[#111418] text-[32px] font-bold leading-tight min-w-72">Health History Tracker</p>
+          </div>
+
+          <h2 class="text-[#111418] text-[22px] font-bold px-4 pb-3 pt-5">Add New Condition</h2>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <input id="conditionName" placeholder="Condition Name" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 h-14" />
+          </div>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <input id="startDate" placeholder="Start Date" type="date" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 h-14" />
+          </div>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <select id="status" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 h-14">
+              <option value="">Select Status</option>
+              <option value="Active">Active</option>
+              <option value="Under Treatment">Under Treatment</option>
+              <option value="Monitoring">Monitoring</option>
+              <option value="Chronic">Chronic</option>
+              <option value="In Remission">In Remission</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <textarea id="notes" placeholder="Notes" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 min-h-36"></textarea>
+          </div>
+          <div class="flex px-4 py-3 justify-end">
+            <button onclick="saveCondition()" class="bg-[#248bf3] text-white font-bold h-10 px-4 rounded-xl text-sm">
+              <span class="truncate">Save</span>
+            </button>
+          </div>
+
+          <h2 class="text-[#111418] text-[22px] font-bold px-4 pb-3 pt-5">Existing Conditions</h2>
+          <div id="conditionList" class="px-4 space-y-2 pb-10"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRUD Script -->
+  <!-- 🧠 You already have the same <head> part, no changes needed there -->
+
+<!-- 🔁 Inside <body> – update the script at the end -->
+<script>
+  let editingId = null; // Keeps track of the condition being edited
+
+  async function saveCondition() {
+    const name = document.getElementById("conditionName").value;
+    const startDate = document.getElementById("startDate").value;
+    const status = document.getElementById("status").value;
+    const notes = document.getElementById("notes").value;
+
+    const payload = { name, startDate, status, notes };
+
+    const url = editingId
+      ? `http://localhost:3001/api/conditions/${editingId}`
+      : 'http://localhost:3001/api/conditions';
+
+    const method = editingId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      alert(editingId ? "✅ Updated" : "✅ Saved");
+      clearForm();
+      loadConditions();
+    } else {
+      alert("❌ Failed to save");
+    }
+  }
+
+  function populateForm(cond) {
+    document.getElementById("conditionName").value = cond.name;
+    document.getElementById("startDate").value = cond.startDate.split('T')[0]; // trim time
+    document.getElementById("status").value = cond.status;
+    document.getElementById("notes").value = cond.notes;
+    editingId = cond.id;
+
+    // Show cancel button
+    document.getElementById("cancelBtn").classList.remove("hidden");
+  }
+
+  function clearForm() {
+    document.getElementById("conditionName").value = '';
+    document.getElementById("startDate").value = '';
+    document.getElementById("status").value = '';
+    document.getElementById("notes").value = '';
+    editingId = null;
+    document.getElementById("cancelBtn").classList.add("hidden");
+  }
+
+  async function loadConditions() {
+    const res = await fetch('http://localhost:3001/api/conditions');
+    const data = await res.json();
+    const list = document.getElementById("conditionList");
+    list.innerHTML = '';
+
+    data.forEach(cond => {
+      const div = document.createElement("div");
+      div.className = "flex justify-between items-center bg-white p-4 rounded-xl shadow cursor-pointer";
+      div.onclick = () => populateForm(cond); // enable editing
+
+      div.innerHTML = `
+        <div>
+          <p class="text-base font-medium">${cond.name}</p>
+          <p class="text-sm text-[#60758a]">${cond.status}</p>
+          <p class="text-xs text-gray-400">${cond.startDate?.split('T')[0]}</p>
+          <p class="text-xs text-gray-500 italic">${cond.notes}</p>
+        </div>
+        <button onclick="event.stopPropagation(); deleteCondition(${cond.id})"
+          class="bg-[#f0f2f5] text-sm px-4 py-2 rounded-xl text-[#111418]">
+          Delete
+        </button>
+      `;
+
+      list.appendChild(div);
+    });
+  }
+
+  async function deleteCondition(id) {
+    const res = await fetch(`http://localhost:3001/api/conditions/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (res.ok) {
+      clearForm();
+      loadConditions();
+    } else {
+      alert("❌ Delete failed");
+    }
+  }
+
+  window.onload = loadConditions;
+</script>
+
+<!-- 🔁 Below your "Save" button, insert this extra cancel button -->
+<div class="flex px-4 py-1 justify-end">
+  <button id="cancelBtn" onclick="clearForm()" class="hidden text-sm px-4 py-2 rounded-xl text-[#248bf3] font-medium border border-[#248bf3]">
+    Cancel Edit
+  </button>
+</div>
+
+</body>
+</html>

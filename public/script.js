@@ -1,12 +1,9 @@
 const socket = io('/')
 const videoGrid = document.getElementById('video-grid')
 const myPeer = new Peer(undefined, {
-  host: 'https://bed2025apr-assignment-p06.onrender.com',
-  port: 443,
-  path: '/peerjs',
-  secure: true
-});
-
+    host: '/',
+    port: '3001'
+})
 const myVideo = document.createElement('video')
 myVideo.muted = true
 

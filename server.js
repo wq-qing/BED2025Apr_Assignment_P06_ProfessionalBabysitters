@@ -2,24 +2,22 @@ const express = require('express')
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-const { v4: uuidV4 } = require('uuid') // Only if you want to use it
-const { ExpressPeerServer } = require('peer');
+// const { v4: uuidV4 } = require('uuid') [use for multiple rooms]
+// const { ExpressPeerServer } = require('peer');
 
 app.set('view engine', 'ejs')
 app.set('views', './views')
 app.use(express.static('public'))
 app.use(express.json())
 
-
-const peerServer = ExpressPeerServer(server, {
-  debug: true,
-  path: '/peerjs'
-})
-app.use('/peerjs', peerServer)
+// app.get('/', (req,res) => {
+//     res.redirect(`/${uuidV4()}`)
+// })
 
 app.get('/', (req, res) => {
-  res.redirect('/main-room')  // Hardcoded room
+  res.redirect('/main-room') //hardcoded for now
 })
+
 
 app.get('/:room', (req, res) => {
   res.render('room', { roomId: req.params.room })
@@ -38,7 +36,7 @@ function authenticateToken(req,res,next) {
   })
 }
 
-// Socket.io handling
+// Socket.io
 io.on('connection', socket => {
     socket.on('join-room', (roomId, userId) => {
     if (!roomId || !userId) {
@@ -46,10 +44,10 @@ io.on('connection', socket => {
         return
     }
 
-    console.log(`✅ ${userId} joined room ${roomId}`)
+    console.log(`✅ ${userId} joined room ${roomId}`) //console logs to test if a new user is being logged
     socket.join(roomId)
 
-    setTimeout(() => {
+    setTimeout(() => { //it keeps trying to broadcast a room before the socket has actually joined it
         try {
             socket.to(roomId).emit('user-connected', userId)
         } catch (e) {
@@ -64,7 +62,7 @@ io.on('connection', socket => {
 
 })
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000 // deafults to this for local, uses other port from other servers to run when
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

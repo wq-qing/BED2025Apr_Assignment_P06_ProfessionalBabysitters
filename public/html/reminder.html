@@ -1,74 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Management Dashboard</title>
-    <link rel="stylesheet" href="/public/css/actions.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medical Management Dashboard</title>
+  <link rel="stylesheet" href="/public/css/actions.css" />
+</head>
 <body>
-    <div class="container">
-        <div class="header">
-            <a href="profile.html" class="back-btn" style="text-decoration: none;">← Back</a>
-            <h1>Medical Management Dashboard</h1>
-        </div>
+  <div class="container">
+    <div class="header">
+      <a href="profile.html" class="back-btn" style="text-decoration: none;">← Back</a>
+      <h1>Medical Management Dashboard</h1>
+    </div>
 
-        <div class="section">
-            <h2 class="section-title">Medicine Reminders</h2>
-            <button class="btn" id="addReminderBtn">Add New Reminder</button>
-            <table id="remindersTable">
-                <thead>
-                    <tr>
-                        <th>Medicine Name</th>
-                        <th>Dosage</th>
-                        <th>Time</th>
-                        <th>Frequency</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Paracetamol</td>
-                        <td>500mg</td>
-                        <td>08:00 AM</td>
-                        <td>Daily</td>
-                        <td>
-                            <button class="btn edit-reminder-btn">Edit</button>
-                            <button class="btn btn-danger delete-reminder-btn">Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="section">
+      <h2 class="section-title">Medicine Reminders</h2>
+      <button class="btn" id="addReminderBtn">Add New Reminder</button>
+      <table id="remindersTable">
+        <thead>
+          <tr>
+            <th>Medicine Name</th>
+            <th>Dosage</th>
+            <th>Time</th>
+            <th>Frequency</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
     <div id="editReminderModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Edit Medication Reminder</h2>
-            <form id="editReminderForm">
-                <div class="form-group">
-                    <label for="editMedName">Medicine Name</label>
-                    <input type="text" id="editMedName" value="Medicine Name" required>
-                </div>
-                <div class="form-group">
-                    <label for="editDosage">Dosage</label>
-                    <input type="text" id="editDosage" value="Dosage [mg]" required>
-                </div>
-                <div class="form-group">
-                    <label for="editTime">Time</label>
-                    <input type="time" id="editTime" value="Time [00:00]  c    " required>
-                </div>
-                <div class="form-group">
-                    <label for="editFrequency">Frequency</label>
-                    <select id="editFrequency" required>
-                        <option value="daily" selected>Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn">Save Changes</button>
-            </form>
-        </div>
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edit Medication Reminder</h2>
+        <form id="editReminderForm">
+          <div class="form-group">
+            <label for="editMedName">Medicine Name</label>
+            <input type="text" id="editMedName" required />
+          </div>
+          <div class="form-group">
+            <label for="editDosage">Dosage</label>
+            <input type="text" id="editDosage" required />
+          </div>
+          <div class="form-group">
+            <label for="editTime">Time</label>
+            <input type="time" id="editTime" required />
+          </div>
+          <div class="form-group">
+            <label for="editFrequency">Frequency</label>
+            <select id="editFrequency" required>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <button type="submit" class="btn">Save Changes</button>
+        </form>
+      </div>
     </div>
- <script src="/public/js/reminder.js"></script>
+
+    <script src="/public/js/reminder.js"></script>
+  </div>
 </body>
 </html>

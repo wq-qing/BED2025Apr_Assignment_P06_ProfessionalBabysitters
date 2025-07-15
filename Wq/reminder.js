@@ -1,5 +1,3 @@
-// public/js/reminders.js
-
 document.addEventListener('DOMContentLoaded', async () => {
   const tableBody = document.querySelector("#remindersTable tbody");
   const editModal = document.getElementById('editReminderModal');
@@ -97,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         try {
-          const res = await fetch(`/api/reminders/${id}`, {
+          const res = await fetch(`http://localhost:3000/api/reminders/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedReminder)
@@ -136,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!confirmDelete) return;
 
         try {
-          const res = await fetch(`/api/reminders/${id}`, {
+          const res = await fetch(`http://localhost:3000/api/reminders/${id}`, {
             method: "DELETE"
           });
 

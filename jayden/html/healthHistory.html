@@ -1,121 +1,166 @@
-<html>
-  <head>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link
-      rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Lexend%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
-    />
-
-    <title>Stitch Design</title>
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  </head>
-  <body>
-    <div
-      class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden"
-      style="--select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(96,117,138)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e'); font-family: Lexend, &quot;Noto Sans&quot;, sans-serif;"
-    >
-      <div class="layout-container flex h-full grow flex-col">
-        <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <p class="text-[#111418] tracking-light text-[32px] font-bold leading-tight min-w-72">Health History Tracker</p>
-            </div>
-            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Add New Condition</h2>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <input
-                  placeholder="Condition Name"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60758a] p-4 text-base font-normal leading-normal"
-                  value=""
-                />
-              </label>
-            </div>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <input
-                  placeholder="Start Date"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60758a] p-4 text-base font-normal leading-normal"
-                  value=""
-                />
-              </label>
-            </div>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <select
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 bg-[image:--select-button-svg] placeholder:text-[#60758a] p-4 text-base font-normal leading-normal"
-                >
-                  <option value="">Select Status</option>
-            <option value="Active">Active</option>
-            <option value="Under Treatment">Under Treatment</option>
-            <option value="Monitoring">Monitoring</option>
-            <option value="Chronic">Chronic</option>
-            <option value="In Remission">In Remission</option>
-            <option value="Resolved">Resolved</option>
-                </select>
-              </label>
-            </div>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <textarea
-                  placeholder="Notes"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none min-h-36 placeholder:text-[#60758a] p-4 text-base font-normal leading-normal"
-                ></textarea>
-              </label>
-            </div>
-            <div class="flex px-4 py-3 justify-end">
-              <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#248bf3] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-              >
-                <span class="truncate">Save</span>
-              </button>
-            </div>
-            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Existing Conditions</h2>
-            <div class="flex items-center gap-4 bg-white px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#111418] text-base font-medium leading-normal line-clamp-1">High Blood Pressure</p>
-                <p class="text-[#60758a] text-sm font-normal leading-normal line-clamp-2">Active</p>
-              </div>
-              <div class="shrink-0">
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-medium leading-normal w-fit"
-                >
-                  <span class="truncate">Delete</span>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center gap-4 bg-white px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#111418] text-base font-medium leading-normal line-clamp-1">Allergies</p>
-                <p class="text-[#60758a] text-sm font-normal leading-normal line-clamp-2">Resolved</p>
-              </div>
-              <div class="shrink-0">
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-medium leading-normal w-fit"
-                >
-                  <span class="truncate">Delete</span>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center gap-4 bg-white px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#111418] text-base font-medium leading-normal line-clamp-1">Asthma</p>
-                <p class="text-[#60758a] text-sm font-normal leading-normal line-clamp-2">Active</p>
-              </div>
-              <div class="shrink-0">
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-medium leading-normal w-fit"
-                >
-                  <span class="truncate">Delete</span>
-                </button>
-              </div>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Health History Tracker</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link
+    rel="stylesheet"
+    as="style"
+    onload="this.rel='stylesheet'"
+    href="https://fonts.googleapis.com/css2?display=swap&family=Lexend:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
+  />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body>
+  <div class="relative flex min-h-screen flex-col bg-white overflow-x-hidden" style="font-family: Lexend, 'Noto Sans', sans-serif;">
+    <div class="layout-container flex h-full grow flex-col">
+      <div class="px-40 flex flex-1 justify-center py-5">
+        <div class="flex flex-col w-[512px] py-5 flex-1">
+          <div class="flex justify-between gap-3 p-4">
+            <p class="text-[#111418] text-[32px] font-bold leading-tight min-w-72">Health History Tracker</p>
           </div>
+
+          <h2 class="text-[#111418] text-[22px] font-bold px-4 pb-3 pt-5">Add New Condition</h2>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <input id="conditionName" placeholder="Condition Name" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 h-14" />
+          </div>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <input id="startDate" placeholder="Start Date" type="date" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 h-14" />
+          </div>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <select id="status" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 h-14">
+              <option value="">Select Status</option>
+              <option value="Active">Active</option>
+              <option value="Under Treatment">Under Treatment</option>
+              <option value="Monitoring">Monitoring</option>
+              <option value="Chronic">Chronic</option>
+              <option value="In Remission">In Remission</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <div class="flex max-w-[480px] gap-4 px-4 py-3">
+            <textarea id="notes" placeholder="Notes" class="form-input flex-1 rounded-xl bg-[#f0f2f5] p-4 min-h-36"></textarea>
+          </div>
+          <div class="flex px-4 py-3 justify-end">
+            <button onclick="saveCondition()" class="bg-[#248bf3] text-white font-bold h-10 px-4 rounded-xl text-sm">
+              <span class="truncate">Save</span>
+            </button>
+          </div>
+
+          <h2 class="text-[#111418] text-[22px] font-bold px-4 pb-3 pt-5">Existing Conditions</h2>
+          <div id="conditionList" class="px-4 space-y-2 pb-10"></div>
         </div>
       </div>
     </div>
-  </body>
+  </div>
+
+  <!-- CRUD Script -->
+
+
+<!-- 🔁 Inside <body> – update the script at the end -->
+<script>
+  let editingId = null; // Keeps track of the condition being edited
+
+  async function saveCondition() {
+    const name = document.getElementById("conditionName").value;
+    const startDate = document.getElementById("startDate").value;
+    const status = document.getElementById("status").value;
+    const notes = document.getElementById("notes").value;
+
+    const payload = { name, startDate, status, notes };
+
+    const url = editingId
+      ? `http://localhost:3001/api/conditions/${editingId}`
+      : 'http://localhost:3001/api/conditions';
+
+    const method = editingId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      alert(editingId ? "✅ Updated" : "✅ Saved");
+      clearForm();
+      loadConditions();
+    } else {
+      alert("❌ Failed to save");
+    }
+  }
+
+  function populateForm(cond) {
+    document.getElementById("conditionName").value = cond.name;
+    document.getElementById("startDate").value = cond.startDate.split('T')[0]; // trim time
+    document.getElementById("status").value = cond.status;
+    document.getElementById("notes").value = cond.notes;
+    editingId = cond.id;
+
+    // Show cancel button
+    document.getElementById("cancelBtn").classList.remove("hidden");
+  }
+
+  function clearForm() {
+    document.getElementById("conditionName").value = '';
+    document.getElementById("startDate").value = '';
+    document.getElementById("status").value = '';
+    document.getElementById("notes").value = '';
+    editingId = null;
+    document.getElementById("cancelBtn").classList.add("hidden");
+  }
+
+  async function loadConditions() {
+    const res = await fetch('http://localhost:3001/api/conditions');
+    const data = await res.json();
+    const list = document.getElementById("conditionList");
+    list.innerHTML = '';
+
+    data.forEach(cond => {
+      const div = document.createElement("div");
+      div.className = "flex justify-between items-center bg-white p-4 rounded-xl shadow cursor-pointer";
+      div.onclick = () => populateForm(cond); // enable editing
+
+      div.innerHTML = `
+        <div>
+          <p class="text-base font-medium">${cond.name}</p>
+          <p class="text-sm text-[#60758a]">${cond.status}</p>
+          <p class="text-xs text-gray-400">${cond.startDate?.split('T')[0]}</p>
+          <p class="text-xs text-gray-500 italic">${cond.notes}</p>
+        </div>
+        <button onclick="event.stopPropagation(); deleteCondition(${cond.id})"
+          class="bg-[#f0f2f5] text-sm px-4 py-2 rounded-xl text-[#111418]">
+          Delete
+        </button>
+      `;
+
+      list.appendChild(div);
+    });
+  }
+
+  async function deleteCondition(id) {
+    const res = await fetch(`http://localhost:3001/api/conditions/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (res.ok) {
+      clearForm();
+      loadConditions();
+    } else {
+      alert("❌ Delete failed");
+    }
+  }
+
+  window.onload = loadConditions;
+</script>
+
+<!-- 🔁 Below your "Save" button, insert this extra cancel button -->
+<div class="flex px-4 py-1 justify-end">
+  <button id="cancelBtn" onclick="clearForm()" class="hidden text-sm px-4 py-2 rounded-xl text-[#248bf3] font-medium border border-[#248bf3]">
+    Cancel Edit
+  </button>
+</div>
+
+</body>
 </html>

@@ -1,104 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stitch Design – Register</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="min-h-screen bg-white flex items-center justify-center" style='font-family: Lexend, "Noto Sans", sans-serif;'>
+  <form id="registerForm" class="w-full max-w-md p-6">
+    <h2 class="text-[#111518] text-[28px] font-bold text-center pb-3">Create your account</h2>
 
-    <title>Stitch Design</title>
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
-
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    <link
-      rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&family=Lexend:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
-    />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  </head>
-
-  <body
-    class="min-h-screen bg-white flex items-center justify-center"
-    style='font-family: Lexend, "Noto Sans", sans-serif;'
-  >
-    <div class="w-full max-w-md p-6">
-      <h2 class="text-[#111518] text-[28px] font-bold leading-tight text-center pb-3">
-        Create your account
-      </h2>
-
-      <!-- Full Name -->
-      <div class="flex flex-wrap items-end gap-4 py-3">
-        <label class="flex flex-col w-full">
-          <input
-            placeholder="Full Name"
-            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
-          />
-        </label>
-      </div>
-
-      <!-- Email -->
-      <div class="flex flex-wrap items-end gap-4 py-3">
-        <label class="flex flex-col w-full">
-          <input
-            placeholder="Email"
-            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
-          />
-        </label>
-      </div>
-
-      <!-- Password -->
-      <div class="flex flex-wrap items-end gap-4 py-3">
-        <label class="flex flex-col w-full">
-          <input
-            placeholder="Password"
-            type="password"
-            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
-          />
-        </label>
-      </div>
-
-      <!-- Confirm Password -->
-      <div class="flex flex-wrap items-end gap-4 py-3">
-        <label class="flex flex-col w-full">
-          <input
-            placeholder="Confirm Password"
-            type="password"
-            class="form-input w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base text-[#111518] focus:outline-0 focus:ring-0 border-none"
-          />
-        </label>
-      </div>
-
-      <!-- Role Selection -->
-      <div class="flex flex-wrap gap-3 py-4">
-        <label
-          class="text-sm font-medium leading-normal flex items-center justify-center rounded-xl border border-[#dbe1e6] px-4 h-11 text-[#111518] has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#0b80ee] relative cursor-pointer"
-        >
-          Doctor
-          <input type="radio" class="invisible absolute" name="role" />
-        </label>
-        <label
-          class="text-sm font-medium leading-normal flex items-center justify-center rounded-xl border border-[#dbe1e6] px-4 h-11 text-[#111518] has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#0b80ee] relative cursor-pointer"
-        >
-          Elderly User
-          <input type="radio" class="invisible absolute" name="role" />
-        </label>
-      </div>
-
-      <!-- Register Button -->
-      <div class="py-3">
-        <button
-          class="w-full h-12 px-5 rounded-full bg-[#0b80ee] text-white text-base font-bold tracking-[0.015em] hover:bg-[#0a6fd1] transition-colors"
-        >
-          Register
-        </button>
-      </div>
-
-      <!-- Already have an account -->
-       <a href="login.html">
-      <p class="text-[#60768a] text-sm text-center underline py-1 cursor-pointer">
-        Already have an account? Login
-      </p>
-      </a>
+    <!-- Full Name -->
+    <div class="py-3">
+      <input id="fullName" name="fullName" placeholder="Full Name" required
+             class="w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base focus:outline-none"/>
     </div>
-  </body>
+
+    <!-- Email -->
+    <div class="py-3">
+      <input id="email" name="email" type="email" placeholder="Email" required
+             class="w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base focus:outline-none"/>
+    </div>
+
+    <!-- Password -->
+    <div class="py-3">
+      <input id="password" name="password" type="password" placeholder="Password" required
+             class="w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base focus:outline-none"/>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="py-3">
+      <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm Password" required
+             class="w-full rounded-xl bg-[#f0f2f5] h-14 p-4 placeholder:text-[#60768a] text-base focus:outline-none"/>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="flex gap-4 py-4">
+      <label class="flex-1 text-center border rounded-xl p-3 cursor-pointer">
+        Doctor
+        <input type="radio" name="role" value="Doctor" required class="hidden"/>
+      </label>
+      <label class="flex-1 text-center border rounded-xl p-3 cursor-pointer">
+        Elderly
+        <input type="radio" name="role" value="Elderly" required class="hidden"/>
+      </label>
+    </div>
+
+    <!-- Register Button -->
+    <div class="py-3">
+      <button type="submit"
+              class="w-full h-12 rounded-full bg-[#0b80ee] text-white font-bold hover:bg-[#0a6fd1] transition">
+        Register
+      </button>
+    </div>
+
+    <p class="text-center text-sm text-[#60768a] underline">
+      <a href="login.html">Already have an account? Login</a>
+    </p>
+  </form>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const fullName = e.target.fullName.value.trim();
+      const email    = e.target.email.value.trim();
+      const password = e.target.password.value;
+      const confirm  = e.target.confirmPassword.value;
+      const role     = e.target.role.value;           // "Doctor" or "Elderly"
+
+      if (password !== confirm) {
+        return alert('Passwords do not match.');
+      }
+
+      // Generate a random 6‑digit numeric string
+      const randNum = Math.floor(100000 + Math.random() * 900000);
+      // Prefix with D or E
+      const userId = (role === 'Doctor' ? 'D' : 'E') + randNum;
+
+      try {
+        const res = await fetch('http://localhost:3000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, fullName, email, password, role })
+        });
+        if (!res.ok) throw await res.text();
+        alert('Registration successful! Your ID: ' + userId);
+        window.location.href = 'login.html';
+      } catch (err) {
+        console.error(err);
+        alert('Error: ' + err);
+      }
+    });
+  </script>
+</body>
 </html>

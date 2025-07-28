@@ -3,6 +3,9 @@ const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
+require('dotenv').config();        // if you use a .env for your DB creds
+const sql    = require('mssql');
+const bcrypt = require('bcryptjs');
 // const { ExpressPeerServer } = require('peer');
 
 app.set('view engine', 'ejs')

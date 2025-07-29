@@ -1,4 +1,4 @@
-//Jay
+//Jayden (signup)
 // server.js
 require('dotenv').config();
 const express = require('express');

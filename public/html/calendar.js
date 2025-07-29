@@ -49,13 +49,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const doctorSelect        = document.getElementById("doctor");
   const confirmBtn          = document.getElementById("confirmBtn");
 
-  const sumDoctor          = document.getElementById("sumDoctor");
-  const sumDate            = document.getElementById("sumDate");
-  const sumTime            = document.getElementById("sumTime");
-  const changeTimingBtn    = document.getElementById("changeTimingBtn");
-  const changeDateBtn      = document.getElementById("changeDateBtn");
-  const deleteBtn          = document.getElementById("deleteAppointmentBtn");
-  const backToStep4        = document.getElementById("backToStep2From4");
+  const sumDoctor           = document.getElementById("sumDoctor");
+  const sumDate             = document.getElementById("sumDate");
+  const sumTime             = document.getElementById("sumTime");
+  const changeTimingBtn     = document.getElementById("changeTimingBtn");
+  const changeDateBtn       = document.getElementById("changeDateBtn");
+  const deleteBtn           = document.getElementById("deleteAppointmentBtn");
+  const backToStep4         = document.getElementById("backToStep2From4");
   const viewAppointmentsBtn = document.getElementById("viewAppointmentsBtn");
 
   let selectedDate   = "";
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     step2.classList.remove("hidden");
   });
 
-  // ── Step 3 → Create (POST) + Summary ─────────────────────────────
+  // ── Step 3 → Create or Update + Summary ─────────────────────────
   confirmBtn.addEventListener("click", async () => {
     const doctor = doctorSelect.value;
     const time24 = convertTo24h(selectedTime);
@@ -159,12 +159,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const startDt = new Date(`${selectedDate}T${h24}:${mn}:00`);
     const endDt   = new Date(startDt.getTime() + 14*60000);
 
-    // **NEW** only HH:MM (5 chars) to fit your CHAR(5) column
+    // only HH:MM (5 chars) to fit your CHAR(5) column
     const hhmm = dt => dt.toTimeString().slice(0,5);
 
     try {
-      const res = await fetch("http://localhost:4000/api/appointments", {
-        method: "POST",
+      let url, method;
+      if (appointmentId) {
+        // UPDATE existing
+        url = `http://localhost:4000/api/appointments/${appointmentId}`;
+        method = "PUT";
+      } else {
+        // CREATE new
+        url = "http://localhost:4000/api/appointments";
+        method = "POST";
+      }
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type":"application/json" },
         body: JSON.stringify({
           date:      selectedDate,
@@ -174,9 +184,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
       });
       if (!res.ok) throw new Error("Network response was not ok");
-      const { id } = await res.json();
-      appointmentId = id;
-      showToast(`Saved (ID ${id})`);
+      const data = await res.json();
+      if (!appointmentId) appointmentId = data.id;
+      showToast(method === "POST"
+        ? `Saved (ID ${data.id})`
+        : "Appointment updated"
+      );
       localStorage.setItem("hasAppointment", "true");
     } catch (err) {
       console.error(err);
@@ -251,13 +264,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Change Timing & Date & Back Handlers ─────────────────────────
   changeTimingBtn.addEventListener("click", () => {
+    // clear lock so you can pick a new slot
+    localStorage.removeItem("hasAppointment");
     step4.classList.add("hidden");
     step2.classList.remove("hidden");
   });
+
   changeDateBtn.addEventListener("click", () => {
+    // clear lock so you can pick a new date
+    localStorage.removeItem("hasAppointment");
     step4.classList.add("hidden");
     step1.classList.remove("hidden");
   });
+
   backToStep4.addEventListener("click", () => {
     step4.classList.add("hidden");
     step1.classList.remove("hidden");

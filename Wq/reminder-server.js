@@ -7,7 +7,14 @@ const path = require("path");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+
+app.use('/css', express.static(path.join(__dirname, '..', 'public', 'css')));
+
+app.use(express.static(path.join(__dirname)));
+
+app.get("/reminder", (req, res) => {
+  res.sendFile(path.join(__dirname, "reminder.html"));
+});
 
 const dbConfig = {
   user: 'reminder-edit',
@@ -21,7 +28,7 @@ const dbConfig = {
 };
 
 sql.connect(dbConfig).then(() => {
-  console.log("✅ MSSQL Connected");
+  console.log("MSSQL Connected");
 
   // GET all reminders
   app.get("/api/reminders", async (req, res) => {
@@ -33,7 +40,7 @@ sql.connect(dbConfig).then(() => {
       `);
       res.json(result.recordset);
     } catch (err) {
-      console.error("❌ GET error:", err);
+      console.error("GET error:", err);
       res.status(500).send("Server error");
     }
   });
@@ -59,7 +66,7 @@ sql.connect(dbConfig).then(() => {
 
       res.send("Reminder updated successfully");
     } catch (err) {
-      console.error("❌ PUT error:", err);
+      console.error("PUT error:", err);
       res.status(500).send("Failed to update reminder");
     }
   });
@@ -79,10 +86,10 @@ sql.connect(dbConfig).then(() => {
 
       res.send("Reminder deleted successfully");
     } catch (err) {
-      console.error("❌ DELETE error:", err);
+      console.error("DELETE error:", err);
       res.status(500).send("Failed to delete reminder");
     }
   });
 
-  app.listen(3000, () => console.log("🚀 Server running on http://localhost:3000"));
-}).catch(err => console.error("❌ DB connection failed:", err));
+  app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+}).catch(err => console.error("Database connection failed:", err));

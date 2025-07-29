@@ -1,3 +1,6 @@
+// databse to record roomID for specific patients / doctor
+// implement timer, to record page open lengths (record call length), read mssql and display in call history  
+  
 const socket = io('/')
 const videoGrid = document.getElementById('video-grid')
 const myPeer = new Peer(undefined, {

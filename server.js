@@ -2,7 +2,10 @@ const express = require('express')
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-// const { v4: uuidV4 } = require('uuid') [use for multiple rooms]
+const { v4: uuidV4 } = require('uuid')
+require('dotenv').config();        // if you use a .env for your DB creds
+const sql    = require('mssql');
+const bcrypt = require('bcryptjs');
 // const { ExpressPeerServer } = require('peer');
 
 app.set('view engine', 'ejs')
@@ -10,9 +13,9 @@ app.set('views', './views')
 app.use(express.static('public'))
 app.use(express.json())
 
-// app.get('/', (req,res) => {
-//     res.redirect(`/${uuidV4()}`)
-// })
+app.get('/', (req,res) => {
+    res.redirect(`/${uuidV4()}`)
+})
 
 app.get('/', (req, res) => {
   res.redirect('/main-room') //hardcoded for now

@@ -50,9 +50,41 @@
           <div class="form-group">
             <label for="editFrequency">Frequency</label>
             <select id="editFrequency" required>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
+              <option value="1 Time a day">1 Time a Day</option>
+              <option value="2 Times a day">2 Times a day</option>
+              <option value="3 Times a day">3 Times a day</option>
+              <option value="4 Times a day">4 Times a day</option>
+            </select>
+          </div>
+          <button type="submit" class="btn">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="createReminderModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Create Medication Reminder</h2>
+        <form id="createReminderForm">
+          <div class="form-group">
+            <label for="createMedName">Medicine Name</label>
+            <input type="text" id="createMedName" required />
+          </div>
+          <div class="form-group">
+            <label for="createDosage">Dosage</label>
+            <input type="text" id="createDosage" required />
+          </div>
+          <div class="form-group">
+            <label for="createTime">Time</label>
+            <input type="time" id="createTime" required />
+          </div>
+          <div class="form-group">
+            <label for="createFrequency">Frequency</label>
+            <select id="createFrequency" required>
+              <option value="1 Time a day">1 Time a Day</option>
+              <option value="2 Times a day">2 Times a day</option>
+              <option value="3 Times a day">3 Times a day</option>
+              <option value="4 Times a day">4 Times a day</option>
             </select>
           </div>
           <button type="submit" class="btn">Save Changes</button>

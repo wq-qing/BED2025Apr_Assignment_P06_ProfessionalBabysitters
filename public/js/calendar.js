@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       displaySummary(appt.Doctor, startDt, endDt);
     } catch (err) {
       console.error(err);
-      showToast("No appointment found or failed to load");
+      showToast("No appointment found / Made");
     }
   });
 

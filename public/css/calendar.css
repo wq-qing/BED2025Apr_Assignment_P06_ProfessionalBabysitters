@@ -186,3 +186,53 @@ button:disabled {
   margin: 12px auto;
   display: block;
 }
+
+/* doctor picker */
+.doctors {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+.doctor-option {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.doctor-option.selected {
+  border-color: #4caf50;
+  background-color: #e8f5e9;
+}
+.doctor-option img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+/* utility button colors instead of inline */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+.btn-warning {
+  background-color: orange;
+  color: white;
+}
+.btn-info {
+  background-color: #17a2b8;
+  color: white;
+}
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+.btn-light {
+  background-color: #e0e0e0;
+  color: #000;
+}

@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..')));
 
 // 2) Serve calendar.html at root
-app.get('/', (req, res) => {
+app.get('/calendar', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'html', 'calendar.html'));
 });
 

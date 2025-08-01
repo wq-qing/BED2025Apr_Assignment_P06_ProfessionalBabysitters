@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── On load: check if there's already an appointment in DB ─────────
   try {
-    const res = await fetch("http://localhost:4000/api/appointments");
+    const res = await fetch("http://localhost:3000/api/appointments");
     if (res.ok) localStorage.setItem("hasAppointment", "true");
     else       localStorage.removeItem("hasAppointment");
   } catch {
@@ -179,11 +179,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       let url, method;
       if (appointmentId) {
         // UPDATE existing
-        url = `http://localhost:4000/api/appointments/${appointmentId}`;
+        url = `http://localhost:3000/api/appointments/${appointmentId}`;
         method = "PUT";
       } else {
         // CREATE new
-        url = "http://localhost:4000/api/appointments";
+        url = "http://localhost:3000/api/appointments";
         method = "POST";
       }
       const res = await fetch(url, {
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── View (GET) + Summary ─────────────────────────────────────────
   viewAppointmentsBtn.addEventListener("click", async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/appointments");
+      const res = await fetch("http://localhost:3000/api/appointments");
       if (!res.ok) throw new Error("No appointment");
       const appt = await res.json();
       appointmentId = appt.AppointmentID;
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     try {
       const res = await fetch(
-        `http://localhost:4000/api/appointments/${appointmentId}`,
+        `http://localhost:3000/api/appointments/${appointmentId}`,
         { method: "DELETE" }
       );
       if (!res.ok) throw new Error();

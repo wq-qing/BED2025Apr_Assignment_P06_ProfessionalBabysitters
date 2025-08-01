@@ -83,6 +83,22 @@ document.querySelector("#pay-form").addEventListener("submit", async (e) => {
   }
 });
 
+// helper to get unread notification count
+async function fetchUnreadCount() {
+  const res = await fetch(`/notifications?userId=${userId}`);
+  const data = await res.json();
+  const unread = data.filter(n => n.isRead === 0 || n.isRead === false).length;
+  document.querySelector("#unreadBadge").textContent = unread;
+}
+
+// open notifications page
+document.querySelector("#viewNotificationsBtn").addEventListener("click", () => {
+  window.location.href = "/notifications.html?userId=" + encodeURIComponent(userId);
+});
+
+// refresh unread count periodically
+fetchUnreadCount();
+setInterval(fetchUnreadCount, 30000); // every 30s
 // On load
 fetchBalance();
 fetchTransactions();

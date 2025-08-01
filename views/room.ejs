@@ -1,32 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content = "ie=edge">
-    <script>
-        const ROOMID = "<%= roomId %>"
-    </script>
-    <script defer src="https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js"></script>
-    <script src="/socket.io/socket.io.js" defer></script>
-    <script>const ROOM_ID = "<%= roomId %>";</script>
-    <script src="script.js" defer></script>
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consultation Room</title>
+  <link rel="stylesheet" href="/css/style.css" /> 
+  <script>
+    const ROOM_ID = "<%= roomId %>";
+  </script>
+  <script defer src="https://unpkg.com/peerjs/dist/peerjs.min.js"></script>
+  <script defer src="/socket.io/socket.io.js"></script>
+  <script defer src="../script.js"></script>
 </head>
-<style>
-    #video-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, 300px);
-        grid-auto-rows: 300px;
+<body>
+  <header style="padding:12px; background:#fff; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+    <div>Room: <strong><%= roomId.toLowerCase() %></strong></div>
+    <div id="userRole">Role: <strong>Unknown</strong></div>
+    <div>
+      <button id="toggleAudio">Mute</button>
+      <button id="toggleVideo">Cam Off</button>
+      <button id="endCallBtn" style="background:#e53e3e;color:#fff;border:none;padding:8px 12px;border-radius:6px;">End Call</button>
+    </div>
+  </header>
+
+  <main id="video-grid" style="display:grid; gap:12px; padding:16px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); background:#f0f4f8; min-height:60vh;">
+    <!-- video streams injected here -->
+  </main>
+
+  <script>
+    // display role
+    const userId = sessionStorage.getItem('userId') || '';
+    const isDoctor = userId.startsWith('D');
+    document.getElementById('userRole').innerHTML = `Role: <strong>${isDoctor ? 'Doctor' : 'Patient'}</strong>`;
+
+    // End call button (simple reload/redirect)
+    document.getElementById('endCallBtn').addEventListener('click', () => {
+      fetch(`/rooms/${ROOM_ID}`, { method: 'DELETE' })
+        .finally(() => {
+          if (userId.startsWith('D')) {
+            window.location.href = '/doctor';
+          } else {
+            window.location.href = '/waitingRooms';
+          }
+        });
+    });
+
+    // toggle controls wait for stream
+    function whenStream(cb) {
+      if (window.localStream) return cb();
+      const iv = setInterval(() => {
+        if (window.localStream) {
+          clearInterval(iv);
+          cb();
+        }
+      }, 100);
     }
 
-    video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-</style>
-<body>
-    <div id="video-grid"></div>
+    whenStream(() => {
+      const toggleAudio = document.getElementById('toggleAudio');
+      const toggleVideo = document.getElementById('toggleVideo');
+
+      toggleAudio.addEventListener('click', () => {
+        const track = window.localStream.getAudioTracks()[0];
+        if (!track) return;
+        track.enabled = !track.enabled;
+        toggleAudio.textContent = track.enabled ? 'Mute' : 'Unmute';
+      });
+
+      toggleVideo.addEventListener('click', () => {
+        const track = window.localStream.getVideoTracks()[0];
+        if (!track) return;
+        track.enabled = !track.enabled;
+        toggleVideo.textContent = track.enabled ? 'Cam Off' : 'Cam On';
+      });
+    });
+  </script>
 </body>
 </html>

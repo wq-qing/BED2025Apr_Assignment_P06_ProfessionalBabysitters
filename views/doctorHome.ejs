@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome, Doctor</h1>
+    </div>
+
+    <button id="createRoomBtn" class="btn">
+      Create &amp; Join Consultation Room
+    </button>
+  </div>
+
+  <div class="bottom-nav">
+    <a href="/doctor" class="nav-button active">🏠<br>Home</a>
+    <a href="/waitingRooms" class="nav-button">👥<br>Patients</a>
+    <a href="/profile" class="nav-button">👤<br>Profile</a>
+  </div>
+
+  <script>
+    document.getElementById('createRoomBtn').addEventListener('click', async () => {
+      const doctorId = sessionStorage.getItem('userId');
+      if (!doctorId || !doctorId.startsWith('D')) {
+        return alert('You must be logged in as a doctor to create a room.');
+      }
+      try {
+        const res = await fetch('/rooms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ doctorId })
+        });
+        if (!res.ok) throw new Error('Failed to create room');
+        const { roomId } = await res.json();
+        window.location.href = `/room/${roomId}`;
+      } catch (err) {
+        console.error(err);
+        alert('Could not create room.');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -4,35 +4,256 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wallet</title>
+  <style>
+    :root {
+      --bg: #f5fbf7;
+      --card-bg: #ffffff;
+      --primary: #40916c;
+      --primary-hover: #2f7f55;
+      --text: #1f3d2f;
+      --radius: 12px;
+      --shadow: 0 6px 18px rgba(64,146,108,0.08);
+      --border: #d7e7df;
+      --spacing: 1rem;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      --transition: .2s ease;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      line-height: 1.4;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    body.large {
+      font-size: 1.3rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 1.5rem auto;
+      padding: 1rem 1.25rem;
+    }
+
+    h1, h2 {
+      margin: 0 0 0.5rem;
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .balance {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .form-group {
+      flex: 1 1 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 12px 14px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #eef8f3;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 44px;
+    }
+
+    button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 12px 18px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .2s;
+      min-height: 44px;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    .small-btn {
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+
+    .notification-badge {
+      background: #ffcc00;
+      color: #1f3d2f;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-left: 8px;
+      display: inline-block;
+    }
+
+    .transaction-list {
+      max-height: 260px;
+      overflow-y: auto;
+      margin-top: .5rem;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+      margin: 0;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .large-toggle {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    @media (max-width: 850px) {
+      .flex {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2><h2>Current Wallet Balance: $<span id="walletBalance">0.00</span></h2></h2>
-  <button type="button" id="usePrevCardBtn">Use Previous Card</button><br/><br/>
-  <form id="topup-form">
-    <input type="text" id="cardNumber" placeholder="Card Number" required /><br/>
-    <input type="text" id="expiryDate" placeholder="Expiry Date (MM/YY)" required /><br/>
-    <input type="text" id="cvv" placeholder="CVV" required /><br/>
-    <input type="number" id="topupAmount" placeholder="Top-up Amount" required /><br/>
-    <button type="submit">Top Up</button>
-  </form>
+  <div class="container">
+    <div class="top-bar">
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <h1 style="margin:0;">Wallet</h1>
+        <button id="largeModeBtn" class="large-toggle">Large Text</button>
+      </div>
+      <div>
+        <button id="viewNotificationsBtn" class="small-btn">
+          Notifications <span id="unreadBadge" class="notification-badge">0</span>
+        </button>
+      </div>
+    </div>
 
-  <div style="margin-bottom:1em;">
-    <button id="viewNotificationsBtn">View Notifications (<span id="unreadBadge">0</span>)</button>
+    <div class="card" aria-label="Top-up wallet">
+      <div class="balance">
+        Current Wallet Balance: $<span id="walletBalance">0.00</span>
+      </div>
+      <div style="margin-bottom:12px;">
+        <button type="button" id="usePrevCardBtn" class="small-btn">Use Previous Card</button>
+      </div>
+      <form id="topup-form">
+        <div class="flex">
+          <div class="form-group">
+            <label for="cardNumber">Card Number</label>
+            <input type="text" id="cardNumber" placeholder="Card Number" required aria-label="Card Number" />
+          </div>
+          <div class="form-group">
+            <label for="expiryDate">Expiry Date</label>
+            <input type="text" id="expiryDate" placeholder="MM/YY" required aria-label="Expiry Date" />
+          </div>
+          <div class="form-group">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" placeholder="CVV" required aria-label="CVV" />
+          </div>
+          <div class="form-group">
+            <label for="topupAmount">Top-up Amount</label>
+            <input type="number" id="topupAmount" placeholder="Amount" required aria-label="Top-up Amount" />
+          </div>
+        </div>
+        <div style="margin-top:10px;">
+          <button type="submit" id="topupBtn">Top Up</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card" aria-label="Make a payment">
+      <h2 class="section-title">Pay with Wallet</h2>
+      <div class="flex" style="align-items:flex-end;">
+        <div class="form-group" style="flex:1 1 180px;">
+          <label for="payAmount">Payment Amount</label>
+          <input type="number" id="payAmount" placeholder="Amount" required aria-label="Payment Amount" />
+        </div>
+        <div>
+          <button id="payBtn">Pay</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" aria-label="Recent transactions">
+      <h2 class="section-title">Recent Transactions</h2>
+      <div class="transaction-list">
+        <ul id="transactionList">
+          <li>Loading...</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
-  <hr/>
-
-  <h2>Pay with Wallet</h2>
-  <form id="pay-form">
-    <input type="number" id="payAmount" placeholder="Payment Amount" required /><br/>
-    <button type="submit">Pay</button>
-  </form>
-
-  <h3>Last 3 Transactions</h3>
-  <ul id="transactionList">
-  <li>Loading...</li>
-  </ul>
-
   <script src="wallet.js"></script>
+  <script>
+    // large-mode toggle
+    const largeBtn = document.getElementById("largeModeBtn");
+    const body = document.body;
+    function updateButton() {
+      largeBtn.textContent = body.classList.contains("large") ? "Normal Text" : "Large Text";
+    }
+    largeBtn.addEventListener("click", () => {
+      body.classList.toggle("large");
+      updateButton();
+    });
+    updateButton();
+
+    // notifications navigation (preserves userId)
+    document.getElementById("viewNotificationsBtn").addEventListener("click", () => {
+      const userId = "user123"; // if dynamic, replace
+      window.location.href = `/notifications.html?userId=${encodeURIComponent(userId)}`;
+    });
+  </script>
 </body>
 </html>

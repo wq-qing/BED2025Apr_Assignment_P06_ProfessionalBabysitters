@@ -122,5 +122,5 @@ app.delete('/api/appointments/:id', async (req, res) => {
 // 8) Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Calendar API is running on http://localhost:${PORT}`);
+  console.log(`✅ Calendar API is running on http://localhost:${PORT}/calendar`);
 });

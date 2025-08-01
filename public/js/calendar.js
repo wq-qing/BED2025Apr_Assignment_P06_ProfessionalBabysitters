@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const backToStep2         = document.getElementById("backToStep2");
   const confirmationDetails = document.getElementById("confirmationDetails");
+  // note: doctorSelect can be removed if no longer used in HTML
   const doctorSelect        = document.getElementById("doctor");
   const confirmBtn          = document.getElementById("confirmBtn");
 
@@ -61,6 +62,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   let selectedDate   = "";
   let selectedTime   = "";
   let appointmentId  = null;
+  let selectedDoctorName = null;
+
+  // ── Setup custom doctor‑picker ───────────────────────────────────
+  confirmBtn.disabled = true;  // start disabled until doctor is chosen
+  const doctorList = document.getElementById("doctorList");
+  doctorList.querySelectorAll(".doctor-option").forEach(el => {
+    el.addEventListener("click", () => {
+      // clear previous selection
+      doctorList.querySelectorAll(".doctor-option")
+        .forEach(e => e.classList.remove("selected"));
+      // mark this one
+      el.classList.add("selected");
+      // store its name
+      selectedDoctorName = el.dataset.name;
+      // enable Confirm
+      confirmBtn.disabled = false;
+    });
+  });
 
   // ── Prevent past dates ────────────────────────────────────────────
   const todayStr = new Date().toISOString().split("T")[0];
@@ -130,10 +149,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             showToast(`Please select ${formatTime(`${nh}:${nm}`)} onwards`);
             return;
           }
-          if (localStorage.getItem("hasAppointment") === "true") {
-            showToast("You already have an existing appointment.");
-            return;
-          }
           selectedTime = btn.textContent;
           step2.classList.add("hidden");
           step3.classList.remove("hidden");
@@ -151,20 +166,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     step2.classList.remove("hidden");
   });
 
-  // ── Step 3 → Create (POST) + Summary ─────────────────────────────
+  // ── Step 3 → Create or Update + Summary ─────────────────────────
   confirmBtn.addEventListener("click", async () => {
-    const doctor = doctorSelect.value;
+    const doctor = selectedDoctorName;  // use your new picker
     const time24 = convertTo24h(selectedTime);
     const [h24, mn] = time24.split(":");
     const startDt = new Date(`${selectedDate}T${h24}:${mn}:00`);
     const endDt   = new Date(startDt.getTime() + 14*60000);
-
-    // **NEW** only HH:MM (5 chars) to fit your CHAR(5) column
-    const hhmm = dt => dt.toTimeString().slice(0,5);
+    const hhmm = dt => dt.toTimeString().slice(0,5); // HH:MM
 
     try {
-      const res = await fetch("http://localhost:4000/api/appointments", {
-        method: "POST",
+      let url, method;
+      if (appointmentId) {
+        // UPDATE existing
+        url = `http://localhost:4000/api/appointments/${appointmentId}`;
+        method = "PUT";
+      } else {
+        // CREATE new
+        url = "http://localhost:4000/api/appointments";
+        method = "POST";
+      }
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type":"application/json" },
         body: JSON.stringify({
           date:      selectedDate,
@@ -174,9 +197,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
       });
       if (!res.ok) throw new Error("Network response was not ok");
-      const { id } = await res.json();
-      appointmentId = id;
-      showToast(`Saved (ID ${id})`);
+      const data = await res.json();
+      if (!appointmentId) appointmentId = data.id;
+      showToast(method === "POST"
+        ? `Saved (ID ${data.id})`
+        : "Appointment updated"
+      );
       localStorage.setItem("hasAppointment", "true");
     } catch (err) {
       console.error(err);
@@ -219,10 +245,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         showToast("Invalid time format from server.");
         return;
       }
+      // set the picker to match the fetched doctor
+      selectedDoctorName = appt.Doctor;
+      doctorList.querySelectorAll(".doctor-option").forEach(el => {
+        el.classList.toggle("selected", el.dataset.name === selectedDoctorName);
+      });
+      confirmBtn.disabled = false;
       displaySummary(appt.Doctor, startDt, endDt);
     } catch (err) {
       console.error(err);
-      showToast("No appointment found or failed to load");
+      showToast("No appointment found or made");
     }
   });
 
@@ -251,10 +283,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Change Timing & Date & Back Handlers ─────────────────────────
   changeTimingBtn.addEventListener("click", () => {
+    localStorage.removeItem("hasAppointment");
     step4.classList.add("hidden");
     step2.classList.remove("hidden");
   });
   changeDateBtn.addEventListener("click", () => {
+    localStorage.removeItem("hasAppointment");
     step4.classList.add("hidden");
     step1.classList.remove("hidden");
   });
@@ -262,4 +296,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     step4.classList.add("hidden");
     step1.classList.remove("hidden");
   });
+
 });

@@ -4,7 +4,7 @@ const transactionSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   type: {
     type: String,
-    enum: ["top-up", "payment"], // ✅ ensures consistent values
+    enum: ["top-up", "payment"], // ensures consistent values
     required: true,
   },
   amount: { type: Number, required: true },

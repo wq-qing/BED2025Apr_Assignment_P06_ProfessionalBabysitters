@@ -1,0 +1,141 @@
+:root {
+  --bg: #f5fbf7;
+  --card-bg: #ffffff;
+  --primary: #40916c;
+  --primary-hover: #2f7f55;
+  --text: #1f3d2f;
+  --radius: 12px;
+  --shadow: 0 6px 18px rgba(64,146,108,0.08);
+  --border: #d7e7df;
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size: 1rem;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+  transition: .2s;
+}
+
+body.large {
+  font-size: 1.3rem;
+}
+
+.container {
+  max-width: 700px;
+  margin: 1.5rem auto;
+  padding: 1rem 1.25rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  margin: 0;
+  flex: 1;
+  font-weight: 600;
+}
+
+.back {
+  text-decoration: none;
+  padding: 8px 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.badge {
+  background: #ffcc00;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+}
+
+ul {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+button {
+  background: var(--primary);
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-left: 8px;
+  line-height: 1;
+  transition: background .2s;
+}
+
+button:hover {
+  background: var(--primary-hover);
+}
+
+.read {
+  opacity: 0.6;
+}
+
+.large-toggle {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.mark-all-btn {
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.header h2 {
+  line-height: 1.1;
+}
+
+.header > div {
+  display: flex;
+  align-items: center;
+}

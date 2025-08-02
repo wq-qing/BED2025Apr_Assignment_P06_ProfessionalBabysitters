@@ -1,39 +1,39 @@
 //Jayden (signup)
 // server.js
-//require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const sql     = require('mssql');
 const bcrypt  = require('bcryptjs');
 const app    = express();
 const http      = require('http');
-const server = http.createServer(app);
 const socketIO  = require('socket.io');
+const server = http.createServer(app);
 const io     = socketIO(server);
 const { ExpressPeerServer } = require('peer');
 const { v4: uuidV4 } = require('uuid');
 const path      = require('path');
 
 // ———— MSSQL CONFIG & CONNECTION ————
-// const dbConfig = {
-//   user:     process.env.SQL_USER,
-//   password: process.env.SQL_PASSWORD,
-//   database: process.env.SQL_DATABASE,
-//   server:   process.env.SQL_SERVER,
-//   port:     parseInt(process.env.SQL_PORT, 10),
-//   options: { encrypt: true, trustServerCertificate: true }
-// };
-
 const dbConfig = {
-  user: 'abcd',           
-  password: '12345',      
-  server: 'localhost',
-  database: 'BED_ASG',
-  options: {
-    encrypt: false,
-    trustServerCertificate: true
-  }
+  user:     process.env.SQL_USER,
+  password: process.env.SQL_PASSWORD,
+  database: process.env.SQL_DATABASE,
+  server:   process.env.SQL_SERVER,
+  port:     parseInt(process.env.SQL_PORT, 10),
+  options: { encrypt: true, trustServerCertificate: true }
 };
+
+// const dbConfig = {
+//   user: 'abcd',           
+//   password: '12345',      
+//   server: 'localhost',
+//   database: 'BED_ASG',
+//   options: {
+//     encrypt: false,
+//     trustServerCertificate: true
+//   }
+// };
 
 const poolPromise = sql.connect(dbConfig)
   .then(pool => {
@@ -291,6 +291,6 @@ app.post('/api/register', async (req, res) => {
 
 // ———— START SERVER ————
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });

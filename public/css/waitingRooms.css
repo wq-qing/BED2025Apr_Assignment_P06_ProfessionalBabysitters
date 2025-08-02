@@ -1,0 +1,159 @@
+    :root {
+      --bg: #f5fbf7;
+      --card-bg: #ffffff;
+      --primary: #40916c;
+      --primary-hover: #2f7f55;
+      --text: #1f3d2f;
+      --radius: 12px;
+      --shadow: 0 6px 18px rgba(64,146,108,0.08);
+      --border: #d7e7df;
+      --spacing: 1rem;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      --transition: .2s ease;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      line-height: 1.4;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 1rem 1.25rem;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-weight: 600;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+
+    .small {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      gap: 6px;
+    }
+    .small:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .room-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1 1 220px;
+    }
+
+    .doctor-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: #555;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: #edf2f7;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    button.primary {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 12px 18px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .2s;
+      min-height: 44px;
+    }
+    button.primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .empty {
+      padding: 1rem;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 1rem;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      border: 1px solid var(--primary);
+      padding: 8px 14px;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 850px) {
+      .card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 8px;
+      }
+    }

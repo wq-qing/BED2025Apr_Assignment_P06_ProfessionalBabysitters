@@ -40,20 +40,18 @@ const app    = express();
 const server = http.createServer(app);
 const io     = socketIO(server);
 
-// Serve static assets
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());  // for parsing JSON bodies
+app.use(express.json());
 
-// Patient home
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public','html', 'index.html'));
 });
-// Waiting rooms page
+
 app.get('/waitingRooms', (req, res) => {
   res.sendFile(path.join(__dirname, 'public','html', 'waitingRooms.html'));
 });
 
-// API: list open rooms
 app.get('/api/openRooms', async (req, res) => {
   try {
     const pool   = await poolPromise;
@@ -66,14 +64,14 @@ app.get('/api/openRooms', async (req, res) => {
   }
 });
 
-// Patient joins a room (mark in use)
-app.post('/rooms/:roomId/join', async (req, res) => {
+app.put('/rooms/:roomId/join', async (req, res) => {
   const roomId = req.params.roomId;
   try {
     const pool = await poolPromise;
     await pool.request()
       .input('RoomId', sql.UniqueIdentifier, roomId)
       .query("UPDATE dbo.Rooms SET Status='in use' WHERE RoomId=@RoomId");
+      console.log('→ Room marked in use');
     res.redirect(`/room/${roomId}`);
   } catch (err) {
     console.error('❌ Error joining room:', err);
@@ -81,13 +79,11 @@ app.post('/rooms/:roomId/join', async (req, res) => {
   }
 });
 
-// Doctor home (EJS)
 app.set('view engine', 'ejs');
 app.get('/doctor', (req, res) => {
   res.render('doctorHome');
 });
 
-// Doctor creates a room
 app.post('/rooms', async (req, res) => {
   const { doctorId } = req.body;
   if (!doctorId || !doctorId.startsWith('D')) {
@@ -108,7 +104,6 @@ app.post('/rooms', async (req, res) => {
   }
 });
 
-// Soft-delete a room by setting Status='closed'
 app.delete('/rooms/:roomId', async (req, res) => {
   const { roomId } = req.params;
   console.log('DELETE /rooms/' + roomId);
@@ -125,28 +120,23 @@ app.delete('/rooms/:roomId', async (req, res) => {
   }
 });
 
-// if someone visits /room/ABCDEF... redirect to lowercase version
 app.use('/room/:roomId', (req, res, next) => {
   const original = req.params.roomId;
   const canonical = original.toLowerCase();
   if (original !== canonical) {
-    // preserve any query string
-    const qs = req.url.slice(req.path.length); // includes ?...
+    const qs = req.url.slice(req.path.length); 
     return res.redirect(303, `/room/${canonical}${qs}`);
   }
   next();
 });
 
-// Room page (EJS)
 app.get('/room/:roomId', (req, res) => {
   res.render('room', { roomId: req.params.roomId });
 });
 
-// PeerJS signaling
 const peerServer = ExpressPeerServer(server, { debug: true });
 app.use('/peerjs', peerServer);
 
-// WebRTC via Socket.IO
 io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId);

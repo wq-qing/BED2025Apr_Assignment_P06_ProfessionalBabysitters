@@ -28,12 +28,10 @@
   </main>
 
   <script>
-    // display role
     const userId = sessionStorage.getItem('userId') || '';
     const isDoctor = userId.startsWith('D');
     document.getElementById('userRole').innerHTML = `Role: <strong>${isDoctor ? 'Doctor' : 'Patient'}</strong>`;
 
-    // End call button (simple reload/redirect)
     document.getElementById('endCallBtn').addEventListener('click', () => {
       fetch(`/rooms/${ROOM_ID}`, { method: 'DELETE' })
         .finally(() => {
@@ -44,7 +42,6 @@
           }
         });
     });
-
     // toggle controls wait for stream
     function whenStream(cb) {
       if (window.localStream) return cb();

@@ -7,7 +7,7 @@ const { poolPromise } = require("./db");
     const pool = await poolPromise;
     console.log("Pool resolved, querying...");
     const result = await pool.request().query("SELECT DB_NAME() AS CurrentDB");
-    console.log("✅ Connected to database:", result.recordset);
+    console.log("Connected to database:", result.recordset);
     process.exit(0);
   } catch (err) {
     console.error("🔥 Connection test failed:", err);

@@ -19,11 +19,11 @@ const dbconfig = {
 const poolPromise = new sql.ConnectionPool(dbconfig)
   .connect()
   .then(pool => {
-    console.log("✅ Connected to MSSQL");
+    console.log("Connected to MSSQL");
     return pool;
   })
   .catch(err => {
-    console.error("❌ MSSQL Connection Failed", err);
+    console.error("MSSQL Connection Failed", err);
     throw err;
   });
 

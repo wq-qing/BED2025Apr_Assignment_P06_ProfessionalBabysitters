@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..')));
 
 // 2) Serve calendar.html at root
-app.get('/', (req, res) => {
+app.get('/calendar', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'html', 'calendar.html'));
 });
 
@@ -122,5 +122,5 @@ app.delete('/api/appointments/:id', async (req, res) => {
 // 8) Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Calendar API is running on http://localhost:${PORT}`);
+  console.log(`✅ Calendar API is running on http://localhost:${PORT}/calendar`);
 });

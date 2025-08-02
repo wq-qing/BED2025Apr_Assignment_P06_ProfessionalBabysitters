@@ -9,38 +9,6 @@
 
   <!-- Link your external calendar.css -->
   <link rel="stylesheet" href="../css/calendar.css" type="text/css"/>
-
-  <!-- Inline CSS for the custom doctor picker -->
-  <style>
-    /* doctor grid layout */
-    .doctors {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin: 20px 0;
-    }
-    /* each doctor card */
-    .doctor-option {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: border-color 0.2s, background-color 0.2s;
-    }
-    .doctor-option.selected {
-      border-color: #4caf50;
-      background-color: #e8f5e9;
-    }
-    .doctor-option img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
@@ -49,7 +17,7 @@
       <h1>Select Appointment Date</h1>
       <input type="date" id="selectDate" />
       <button id="toStep2" disabled>Next</button>
-      <button id="viewAppointmentsBtn" style="background-color: #007bff; color: white;">
+      <button id="viewAppointmentsBtn" class="btn-primary">
         View Appointments
       </button>
     </div>
@@ -70,23 +38,23 @@
 
       <div id="doctorList" class="doctors">
         <div class="doctor-option" data-name="Doctor John, M">
-          <img src="../images/Dr_John.jpg"  alt="Dr John">
+          <img src="http://localhost:3000/images/Dr_John.jpg"  alt="Dr John">
           <span>Doctor John, M</span>
         </div>
         <div class="doctor-option" data-name="Doctor Dixie, F">
-          <img src="../images/Dr_Dixie.jpg" alt="Dr Dixie">
+          <img src="http://localhost:3000/images/Dr_Dixie.jpg" alt="Dr Dixie">
           <span>Doctor Dixie, F</span>
         </div>
         <div class="doctor-option" data-name="Doctor Annie, F">
-          <img src="../images/Dr_Annie.jpg" alt="Dr Annie">
+          <img src="http://localhost:3000/images/Dr_Annie.jpg" alt="Dr Annie">
           <span>Doctor Annie, F</span>
         </div>
         <div class="doctor-option" data-name="Doctor Mae, F">
-          <img src="../images/Dr_Mae.jpg"   alt="Dr Mae">
+          <img src="http://localhost:3000/images/Dr_Mae.jpg"   alt="Dr Mae">
           <span>Doctor Mae, F</span>
         </div>
         <div class="doctor-option" data-name="Doctor Laura, F">
-          <img src="../images/Dr_Laura.jpg" alt="Dr Laura">
+          <img src="http://localhost:3000/images/Dr_Laura.jpg" alt="Dr Laura">
           <span>Doctor Laura, F</span>
         </div>
       </div>
@@ -102,10 +70,10 @@
       <p><strong>Time:</strong>   <span id="sumTime"></span></p>
 
       <p class="small-text">Want to make a change of the time slot?</p>
-      <button id="changeTimingBtn" style="background-color: orange; color: white;">Change Timing</button>
-      <button id="changeDateBtn"    style="background-color: #17a2b8; color: white;">Change Date</button>
-      <button id="deleteAppointmentBtn" style="background-color: #dc3545; color: white;">Delete Appointment</button>
-      <button id="backToStep2From4" style="background-color: #e0e0e0;">Back</button>
+      <button id="changeTimingBtn" class="btn-warning">Change Timing</button>
+      <button id="changeDateBtn" class="btn-info">Change Date</button>
+      <button id="deleteAppointmentBtn" class="btn-danger">Delete Appointment</button>
+      <button id="backToStep2From4" class="btn-light">Back</button>
     </div>
   </div>
 

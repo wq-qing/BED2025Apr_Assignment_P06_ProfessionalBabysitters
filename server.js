@@ -173,7 +173,7 @@ function authenticateToken(req,res,next) {
   })
 }
 
-// Kua Zi Liang(PIG)
+// Kua Zi Liang
 
 app.use(express.static(path.join(__dirname, '..')));
 

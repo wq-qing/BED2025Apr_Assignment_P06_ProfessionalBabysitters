@@ -40,20 +40,18 @@ const app    = express();
 const server = http.createServer(app);
 const io     = socketIO(server);
 
-// Serve static assets
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());  // for parsing JSON bodies
+app.use(express.json());
 
-// Patient home
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public','html', 'index.html'));
 });
-// Waiting rooms page
+
 app.get('/waitingRooms', (req, res) => {
   res.sendFile(path.join(__dirname, 'public','html', 'waitingRooms.html'));
 });
 
-// API: list open rooms
 app.get('/api/openRooms', async (req, res) => {
   try {
     const pool   = await poolPromise;
@@ -66,14 +64,14 @@ app.get('/api/openRooms', async (req, res) => {
   }
 });
 
-// Patient joins a room (mark in use)
-app.post('/rooms/:roomId/join', async (req, res) => {
+app.put('/rooms/:roomId/join', async (req, res) => {
   const roomId = req.params.roomId;
   try {
     const pool = await poolPromise;
     await pool.request()
       .input('RoomId', sql.UniqueIdentifier, roomId)
       .query("UPDATE dbo.Rooms SET Status='in use' WHERE RoomId=@RoomId");
+      console.log('→ Room marked in use');
     res.redirect(`/room/${roomId}`);
   } catch (err) {
     console.error('❌ Error joining room:', err);
@@ -81,13 +79,11 @@ app.post('/rooms/:roomId/join', async (req, res) => {
   }
 });
 
-// Doctor home (EJS)
 app.set('view engine', 'ejs');
 app.get('/doctor', (req, res) => {
   res.render('doctorHome');
 });
 
-// Doctor creates a room
 app.post('/rooms', async (req, res) => {
   const { doctorId } = req.body;
   if (!doctorId || !doctorId.startsWith('D')) {
@@ -108,7 +104,6 @@ app.post('/rooms', async (req, res) => {
   }
 });
 
-// Soft-delete a room by setting Status='closed'
 app.delete('/rooms/:roomId', async (req, res) => {
   const { roomId } = req.params;
   console.log('DELETE /rooms/' + roomId);
@@ -125,28 +120,23 @@ app.delete('/rooms/:roomId', async (req, res) => {
   }
 });
 
-// if someone visits /room/ABCDEF... redirect to lowercase version
 app.use('/room/:roomId', (req, res, next) => {
   const original = req.params.roomId;
   const canonical = original.toLowerCase();
   if (original !== canonical) {
-    // preserve any query string
-    const qs = req.url.slice(req.path.length); // includes ?...
+    const qs = req.url.slice(req.path.length); 
     return res.redirect(303, `/room/${canonical}${qs}`);
   }
   next();
 });
 
-// Room page (EJS)
 app.get('/room/:roomId', (req, res) => {
   res.render('room', { roomId: req.params.roomId });
 });
 
-// PeerJS signaling
 const peerServer = ExpressPeerServer(server, { debug: true });
 app.use('/peerjs', peerServer);
 
-// WebRTC via Socket.IO
 io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId);
@@ -173,7 +163,7 @@ function authenticateToken(req,res,next) {
   })
 }
 
-// Kua Zi Liang(PIG)
+// Kua Zi Liang
 
 app.use(express.static(path.join(__dirname, '..')));
 
@@ -271,3 +261,106 @@ app.delete('/api/appointments/:id', async (req, res) => {
     res.status(500).json({ error: 'Database error' });
   }
 });
+
+// WQ
+
+// 1) Serve HTML & JS from this folder
+app.use(express.static(path.join(__dirname)));
+
+// 2) Serve CSS from ../public/css
+app.use('/css', express.static(path.join(__dirname, '..', 'css')));
+
+// 3) Route to load the page
+app.get("/reminder", (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'html', "reminder.html"));
+});
+
+sql.connect(dbConfig)
+  .then(() => {
+    console.log("MSSQL Connected");
+
+    // GET all reminders
+    app.get("/api/reminders", async (req, res) => {
+      try {
+        const result = await sql.query(`
+          SELECT ReminderID, MedName, MedDosage,
+                 CONVERT(VARCHAR(5), ReminderTime, 108) AS ReminderTime,
+                 Frequency
+          FROM Reminders
+        `);
+        res.json(result.recordset);
+      } catch (err) {
+        console.error("GET error:", err);
+        res.status(500).send("Server error");
+      }
+    });
+
+    // POST new reminder (Option A: generate ReminderID ourselves)
+    app.post("/api/reminders", async (req, res) => {
+      const { MedName, MedDosage, ReminderTime, Frequency } = req.body;
+      try {
+        // 1) find current max numeric part of ReminderID (assumes format 'R01','R02',…)
+        const maxRes = await sql.query`
+          SELECT MAX(CAST(SUBSTRING(ReminderID,2,10) AS INT)) AS maxNum
+          FROM Reminders
+        `;
+        const nextNum = (maxRes.recordset[0].maxNum || 0) + 1;
+        const newId   = "R" + nextNum.toString().padStart(2, '0');
+
+        // 2) insert using that new ID
+        await sql.query`
+          INSERT INTO Reminders (ReminderID, MedName, MedDosage, ReminderTime, Frequency)
+          VALUES (${newId}, ${MedName}, ${MedDosage}, ${ReminderTime}, ${Frequency})
+        `;
+
+        // 3) return the generated ID
+        res.status(201).json({ ReminderID: newId });
+      } catch (err) {
+        console.error("POST error:", err);
+        res.status(500).send("Failed to create reminder");
+      }
+    });
+
+    // PUT update reminder
+    app.put("/api/reminders/:id", async (req, res) => {
+      const { id } = req.params;
+      const { MedName, MedDosage, ReminderTime, Frequency } = req.body;
+      try {
+        const result = await sql.query`
+          UPDATE Reminders SET
+            MedName = ${MedName},
+            MedDosage = ${MedDosage},
+            ReminderTime = ${ReminderTime},
+            Frequency = ${Frequency}
+          WHERE ReminderID = ${id}
+        `;
+        if (result.rowsAffected[0] === 0) {
+          return res.status(404).send("Reminder not found");
+        }
+        res.send("Reminder updated");
+      } catch (err) {
+        console.error("PUT error:", err);
+        res.status(500).send("Failed to update reminder");
+      }
+    });
+
+    // DELETE reminder
+    app.delete("/api/reminders/:id", async (req, res) => {
+      const { id } = req.params;
+      try {
+        const result = await sql.query`
+          DELETE FROM Reminders WHERE ReminderID = ${id}
+        `;
+        if (result.rowsAffected[0] === 0) {
+          return res.status(404).send("Reminder not found");
+        }
+        res.send("Reminder deleted");
+      } catch (err) {
+        console.error("DELETE error:", err);
+        res.status(500).send("Failed to delete reminder");
+      }
+    });
+
+    app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+  })
+  .catch(err => console.error("DB connection failed:", err));

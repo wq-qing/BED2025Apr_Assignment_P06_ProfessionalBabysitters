@@ -4,144 +4,29 @@
   <meta charset="utf-8" />
   <title>Notifications</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    :root {
-      --bg: #f5fbf7;
-      --card-bg: #ffffff;
-      --primary: #40916c;
-      --primary-hover: #2f7f55;
-      --text: #1f3d2f;
-      --radius: 12px;
-      --shadow: 0 6px 18px rgba(64,146,108,0.08);
-      --border: #d7e7df;
-      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      font-size: 1rem;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-      line-height: 1.4;
-      transition: .2s;
-    }
-
-    body.large {
-      font-size: 1.3rem;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: 1.5rem auto;
-      padding: 1rem 1.25rem;
-    }
-
-    .header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    h2 {
-      margin: 0;
-      flex: 1;
-      font-weight: 600;
-    }
-
-    .back {
-      text-decoration: none;
-      padding: 8px 14px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 0.9rem;
-      display: inline-block;
-    }
-
-    .badge {
-      background: #ffcc00;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 1rem 1.25rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 1rem;
-      border: 1px solid var(--border);
-    }
-
-    ul {
-      padding-left: 1.2rem;
-      margin: 0;
-    }
-
-    li {
-      margin-bottom: 12px;
-      position: relative;
-    }
-
-    button {
-      background: var(--primary);
-      border: none;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      margin-left: 8px;
-    }
-
-    button:hover {
-      background: var(--primary-hover);
-    }
-
-    .read {
-      opacity: 0.6;
-    }
-
-    #markAllContainer {
-      margin-bottom: 12px;
-    }
-
-    .large-toggle {
-      background: transparent;
-      border: 1px solid var(--primary);
-      color: var(--primary);
-      border-radius: 6px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-left: auto;
-    }
-
-    @media (max-width: 800px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="notifications.css" />
 </head>
 <body>
   <div class="container">
-    <div class="header">
+    <!-- Back button above title -->
+    <div style="margin-bottom: 8px;">
       <a class="back" href="/wallet">← Back to Wallet</a>
-      <h2>Your Notifications</h2>
-      <div>Unread: <span id="unreadBadge" class="badge">0</span></div>
-      <button id="largeModeBtn" class="large-toggle">Large Text</button>
     </div>
 
-    <div id="markAllContainer"></div>
+    <!-- Title + controls row -->
+    <div class="header" style="align-items: flex-end;">
+      <h2 style="margin:0;">Your Notifications</h2>
+      <div style="display:flex; align-items:center; gap:12px; margin-left:auto;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-weight:500;">Unread:</span>
+          <span id="unreadBadge" class="badge">0</span>
+        </div>
+        <button id="markAllBtn" class="mark-all-btn">Mark all as read</button>
+        <button id="largeModeBtn" class="large-toggle">Large Text</button>
+      </div>
+    </div>
 
+    <!-- Notification list card -->
     <div class="card">
       <ul id="notificationsList">
         <li>Loading...</li>
@@ -162,6 +47,34 @@
       updateButton();
     });
     updateButton();
+
+    // mark all as read via header button
+    document.getElementById("markAllBtn").addEventListener("click", async () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get("userId") || "user123";
+        const res = await fetch(`/notifications?userId=${encodeURIComponent(userId)}`);
+        const notifications = await res.json();
+        const unread = notifications.filter(n => !n.isRead);
+        if (unread.length === 0) return; // nothing to do
+        await Promise.all(
+          unread.map(n =>
+            fetch("/notifications/mark-read", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: n.id }),
+            })
+          )
+        );
+        if (typeof fetchNotifications === "function") {
+          fetchNotifications();
+        } else {
+          window.location.reload();
+        }
+      } catch (err) {
+        console.error("Mark all as read failed:", err);
+      }
+    });
   </script>
 </body>
 </html>

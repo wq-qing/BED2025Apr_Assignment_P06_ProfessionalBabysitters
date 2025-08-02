@@ -3,6 +3,28 @@ const path = require("path");
 const Wallet = require("../models/walletModels");
 const CreditCard = require("../models/creditCardModels");
 
+function isValidCardFormat(cardNumber, expiryDate, cvv) {
+  // Card number: exactly 16 digits
+  if (!/^\d{16}$/.test(cardNumber)) return false;
+
+  // CVV: exactly 3 digits
+  if (!/^\d{3}$/.test(cvv)) return false;
+
+  // Expiry: MM/YY and not in the past
+  const match = expiryDate.match(/^(\d{2})\/(\d{2})$/);
+  if (!match) return false;
+  let [, mmStr, yyStr] = match;
+  const mm = parseInt(mmStr, 10);
+  const yy = parseInt(yyStr, 10);
+  if (mm < 1 || mm > 12) return false;
+
+  const now = new Date();
+  const expiry = new Date(2000 + yy, mm); // first day of following month
+  if (expiry <= now) return false;
+
+  return true;
+}
+
 module.exports = {
   // Serve the wallet HTML page
   serveWalletPage(req, res) {
@@ -27,8 +49,53 @@ module.exports = {
   // POST /wallet/topup
   async postTopUp(req, res) {
     const { userId, cardNumber, expiryDate, cvv, amount } = req.body;
+
     try {
-      // 1) Save or update card and bump lastUsed
+      // Validate amount
+      if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+        return res.status(400).json({ error: "Invalid top-up amount." });
+      }
+
+      // Validate card format; malformed/expired treated as invalid
+      if (!isValidCardFormat(cardNumber, expiryDate, cvv)) {
+        return res.status(400).json({ error: "Invalid card. Please use a valid card." });
+      }
+
+      // Simulated card behavior:
+      // 1. Invalid card - do NOT save
+      if (cardNumber === "5555666677778888") {
+        return res.status(400).json({ error: "Invalid card. Please use a valid card." });
+      }
+
+      // 2. Valid but insufficient funds - save/update card metadata, then error
+      if (cardNumber === "9999888877776666") {
+        // Save or update card (so previous card logic works)
+        let card = await CreditCard.findOne({ userId, cardNumber });
+        if (!card) {
+          card = new CreditCard({
+            userId,
+            cardNumber,
+            expiryDate,
+            cvv,
+            lastUsed: new Date(),
+          });
+        } else {
+          card.expiryDate = expiryDate;
+          card.cvv = cvv;
+          card.lastUsed = new Date();
+        }
+        await card.save();
+
+        return res.status(400).json({ error: "Insufficient funds." });
+      }
+
+      // 3. Only this card is accepted as valid with enough funds
+      if (cardNumber !== "1111222233334444") {
+        return res.status(400).json({ error: "Invalid card. Please use a valid card." });
+      }
+
+      // At this point: cardNumber === "1111222233334444"
+      // Save or update card
       let card = await CreditCard.findOne({ userId, cardNumber });
       if (!card) {
         card = new CreditCard({
@@ -45,15 +112,7 @@ module.exports = {
       }
       await card.save();
 
-      // 2) Simulated failures
-      if (cardNumber === "9999888877776666") {
-        return res.status(400).json({ error: "Invalid card. Please use a valid card." });
-      }
-      if (cardNumber === "5555666677778888") {
-        return res.status(400).json({ error: "Card declined due to insufficient funds." });
-      }
-
-      // 3) Update or create wallet
+      // Update or create wallet
       let wallet = await Wallet.findOne({ userId });
       if (!wallet) {
         wallet = new Wallet({ userId, balance: 0 });
@@ -66,11 +125,11 @@ module.exports = {
         wallet.lowBalanceNotified = false;
       }
 
-      // 4) Record embedded transaction as a deposit
+      // Record embedded transaction as a deposit
       wallet.transactions.push({
         type: "deposit",
         amount: parseFloat(amount),
-        // date defaults to now
+        // date defaults
       });
 
       await wallet.save();
@@ -96,7 +155,6 @@ module.exports = {
         .sort((a, b) => b.date - a.date)
         .slice(0, 5);
 
-      // normalize to a consistent shape if needed
       res.json(recent);
     } catch (err) {
       console.error("Fetch transactions error:", err);

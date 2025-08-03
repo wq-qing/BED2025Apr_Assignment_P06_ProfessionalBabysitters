@@ -48,7 +48,7 @@ app.get("/waitingRooms", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "waitingRooms.html"));
 });
 app.get("/calendar", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "html", "calendar.html"));
+  res.sendFile(path.join(__dirname, "public", "html", "calendar.html"));
 });
 
 // Connect to DB and mount routes
@@ -61,6 +61,15 @@ sql.connect(dbConfig)
     app.post("/api/reminders", validateReminder, addReminder);
     app.put("/api/reminders/:id", validateReminder, editReminder);
     app.delete("/api/reminders/:id", removeReminder);
+
+    const appointmentController = require("./practical-api-mvc-db/controllers/appointmentController");
+
+    // Calendar appointment CRUD
+    app.post("/api/appointments", appointmentController.create);
+    app.get("/api/appointments", appointmentController.read);
+    app.put("/api/appointments/:id", appointmentController.update);
+    app.delete("/api/appointments/:id", appointmentController.delete);
+
 
     // Notifications / wallet / payment
     app.get("/elderlyUserHome/notifications", notificationsController.getNotifications);

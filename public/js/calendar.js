@@ -1,4 +1,3 @@
-
 function showToast(msg) {
   const t = document.createElement("div");
   t.className = "toast";

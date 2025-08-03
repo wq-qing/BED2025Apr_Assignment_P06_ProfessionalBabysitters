@@ -22,9 +22,14 @@ const walletController = require("./practical-api-mvc-db/controllers/walletContr
 const paymentController = require("./practical-api-mvc-db/controllers/paymentController");
 const notificationsController = require("./practical-api-mvc-db/controllers/notificationsController");
 
-//register controller
+//register controller(Jayden)
 const userController = require("./controllers/userController");
 const { validateRegisterUser } = require("./middlewares/userValidation");
+//Authentication/ Signin (Jayden)
+const authController = require("./controllers/authController");
+const { validateLogin } = require("./middlewares/authValidation");
+
+
 
 
 // DB config
@@ -61,8 +66,10 @@ sql.connect(dbConfig)
   .then(() => {
     console.log("MSSQL Connected");
 
-    //  Registration Route
+    //  Registration Route (Jayden)
     app.post("/api/register", validateRegisterUser, userController.registerUser);
+    // Authentication Route (Jayden)
+    app.post("/api/login", validateLogin, authController.login);
 
     // Reminder CRUD
     app.get("/api/reminders", listReminders);

@@ -91,6 +91,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-app.post("/api/register", validateRegisterUser, (res,req) => {
-    userController.registerUser
-}) //test
+app.post("/api/register", validateRegisterUser, userController.registerUser);
+ //test
+
+ app.listen(port, () => {
+  console.log(`✅ Server running on http://localhost:${port}`);
+});

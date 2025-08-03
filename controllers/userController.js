@@ -2,19 +2,19 @@ const userModel = require("../models/userModel.js");
 
 async function registerUser(req, res) {
   try {
-    const { userId, fullName, email, password, role } = req.body;
-    
-    // Basic validation (enhanced validation should be in middleware)
-    if (!userId || !fullName || !email || !password || !role) {
+    const { Id, Name, Email, Password, Role } = req.body;
+
+    if (!Id || !Name || !Email || !Password || !Role) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
+    // ✅ Map to expected keys for the model
     const result = await userModel.registerUser({
-      userId,
-      fullName,
-      email,
-      password,
-      role
+      userId: Id,
+      fullName: Name,
+      email: Email,
+      password: Password,
+      role: Role
     });
 
     if (result.success) {
@@ -23,7 +23,7 @@ async function registerUser(req, res) {
       res.status(400).json({ error: result.message });
     }
   } catch (error) {
-    console.error("Controller error in registerUser:", error);
+    console.error("❌ Controller error in registerUser:", error);
     res.status(500).json({ error: "Error registering user" });
   }
 }

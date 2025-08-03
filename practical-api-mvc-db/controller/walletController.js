@@ -1,7 +1,7 @@
 // controllers/walletController.js
 const path = require("path");
-const Wallet = require("../models/walletModels");
-const CreditCard = require("../models/creditCardModels");
+const Wallet = require("../model/walletModels");
+const CreditCard = require("../model/creditCardModels");
 
 function isValidCardFormat(cardNumber, expiryDate, cvv) {
   // Card number: exactly 16 digits

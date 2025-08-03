@@ -55,7 +55,7 @@
     </div>
 
     <p class="text-center text-sm text-[#60768a] underline">
-      <a href="login.html">Already have an account? Login</a>
+      <a href="/">Already have an account? Login</a>
     </p>
   </form>
 
@@ -91,7 +91,7 @@
         const data = await res.json();
         if (!res.ok) throw data.error || 'Unknown error';
         alert('✅ Registration successful! Your ID: ' + userId);
-        window.location.href = 'index.html';
+        window.location.href = '/';
 
       } catch (err) {
         console.error(err);

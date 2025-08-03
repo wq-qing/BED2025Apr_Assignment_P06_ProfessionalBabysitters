@@ -79,6 +79,9 @@ app.get("/notifications", (req, res) => {
 app.get("/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "signup.html"));
 });
+app.get("/profile", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "profile.html"));
+});
 
 // Call/room route handlers (integrated inline)
 

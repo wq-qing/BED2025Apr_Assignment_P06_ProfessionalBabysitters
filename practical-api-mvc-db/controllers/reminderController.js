@@ -6,6 +6,21 @@ const {
   deleteReminder,
 } = require("../models/reminderModel");
 
+// controllers/reminderController.js
+const { getRemindersByUser } = require("../models/reminderModel");
+
+async function listRemindersForUser(req, res, next) {
+  try {
+    const userID = req.params.userID;
+    const reminders = await getRemindersByUser(userID);
+    res.json(reminders);
+  } catch (e) {
+    next(e);
+  }
+}
+module.exports = { listRemindersForUser };
+
+
 async function listReminders(req, res, next) {
   try {
     const reminders = await getAllReminders();
@@ -17,8 +32,9 @@ async function listReminders(req, res, next) {
 
 async function addReminder(req, res, next) {
   try {
-    const { MedName, MedDosage, ReminderTime, Frequency } = req.body;
-    const newId = await createReminder({ MedName, MedDosage, ReminderTime, Frequency });
+    console.log("Incoming create body:", req.body);
+    const { MedName, MedDosage, ReminderTime, Frequency, userID } = req.body;
+    const newId = await createReminder({ MedName, MedDosage, ReminderTime, Frequency, userID });
     res.status(201).json({ ReminderID: newId });
   } catch (err) {
     next(err);
@@ -49,6 +65,7 @@ async function removeReminder(req, res, next) {
 }
 
 module.exports = {
+  listRemindersForUser,
   listReminders,
   addReminder,
   editReminder,

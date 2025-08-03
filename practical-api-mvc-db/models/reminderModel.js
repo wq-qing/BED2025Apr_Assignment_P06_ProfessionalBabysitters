@@ -11,37 +11,58 @@ async function getAllReminders() {
   return result.recordset;
 }
 
-async function createReminder({ MedName, MedDosage, ReminderTime, Frequency }) {
-  // generate new ReminderID like R01, R02...
+async function createReminder({ userID, MedName, MedDosage, ReminderTime, Frequency }) {
+  if (!userID) {
+    throw new Error("createReminder: userID is missing or falsy");
+  }
+
+  // generate ReminderID like R01, R02...
   const maxRes = await sql.query`
-    SELECT MAX(CAST(SUBSTRING(ReminderID,2,10) AS INT)) AS maxNum
+    SELECT MAX(CAST(SUBSTRING(ReminderID, 2, 10) AS INT)) AS maxNum
     FROM Reminders
   `;
   const nextNum = (maxRes.recordset[0].maxNum || 0) + 1;
   const newId = "R" + nextNum.toString().padStart(2, "0");
 
+  console.log("Inserting reminder with:", {
+    newId,
+    userID,
+    MedName,
+    MedDosage,
+    ReminderTime,
+    Frequency,
+  });
+
+  // explicit parameterization via tagged template
   await sql.query`
-    INSERT INTO Reminders (ReminderID, MedName, MedDosage, ReminderTime, Frequency)
-    VALUES (${newId}, ${MedName}, ${MedDosage}, ${ReminderTime}, ${Frequency})
+    INSERT INTO Reminders (ReminderID, userID, MedName, MedDosage, ReminderTime, Frequency)
+    VALUES (${newId}, ${userID}, ${MedName}, ${MedDosage}, ${ReminderTime}, ${Frequency})
   `;
+
   return newId;
 }
 
-async function updateReminder(id, { MedName, MedDosage, ReminderTime, Frequency }) {
+async function updateReminder(id, userID, { MedName, MedDosage, ReminderTime, Frequency }) {
+  if (!userID) {
+    throw new Error("updateReminder: userID is missing");
+  }
   const result = await sql.query`
     UPDATE Reminders SET
       MedName = ${MedName},
       MedDosage = ${MedDosage},
       ReminderTime = ${ReminderTime},
       Frequency = ${Frequency}
-    WHERE ReminderID = ${id}
+    WHERE ReminderID = ${id} AND userID = ${userID}
   `;
   return result.rowsAffected[0];
 }
 
-async function deleteReminder(id) {
+async function deleteReminder(id, userID) {
+  if (!userID) {
+    throw new Error("deleteReminder: userID is missing");
+  }
   const result = await sql.query`
-    DELETE FROM Reminders WHERE ReminderID = ${id}
+    DELETE FROM Reminders WHERE ReminderID = ${id} AND userID = ${userID}
   `;
   return result.rowsAffected[0];
 }

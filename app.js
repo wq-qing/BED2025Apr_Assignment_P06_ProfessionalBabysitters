@@ -212,11 +212,20 @@ sql.connect(dbConfig)
       console.error("❌ MongoDB connection failed:", mongoErr);
     }
 
+        const {
+      listRemindersForUser,
+      addReminder,
+      editReminder,
+      removeReminder,
+    } = require("./practical-api-mvc-db/controllers/reminderController");
+
     // Reminders
     app.get("/api/reminders", listReminders);
     app.post("/api/reminders", validateReminder, addReminder);
     app.put("/api/reminders/:id", validateReminder, editReminder);
     app.delete("/api/reminders/:id", removeReminder);
+    app.get("/api/reminders/:userId", listRemindersForUser);
+
 
     // Appointments
     const appointmentController = require("./practical-api-mvc-db/controllers/appointmentController");

@@ -13,6 +13,51 @@ document.addEventListener('DOMContentLoaded', () => {
   closeButtons.forEach(btn=>btn.addEventListener('click', closeModals));
   window.addEventListener('click', e => e.target.classList.contains('modal') && closeModals());
 
+  async function loadReminders() {
+  const userID = sessionStorage.getItem("userID");
+  const container = document.querySelector("#remindersTable tbody");
+
+  if (!userID) {
+    container.innerHTML = `<tr><td colspan="5">User not logged in.</td></tr>`;
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/reminders/${encodeURIComponent(userID)}`);
+    if (!res.ok) throw new Error("Failed to fetch");
+    const reminders = await res.json();
+
+    if (!Array.isArray(reminders) || reminders.length === 0) {
+      container.innerHTML = `<tr><td colspan="5">No reminders set.</td></tr>`;
+      return;
+    }
+
+    container.innerHTML = ""; // clear
+
+    reminders.forEach(r => {
+      const row = document.createElement("tr");
+      row.dataset.id = r.ReminderID;
+      row.innerHTML = `
+        <td>${r.MedName}</td>
+        <td>${r.MedDosage}</td>
+        <td>${formatTime(r.ReminderTime)}</td>
+        <td>${r.Frequency}</td>
+        <td>
+          <button class="btn edit-reminder-btn">Edit</button>
+          <button class="btn btn-danger delete-reminder-btn">Delete</button>
+        </td>`;
+      container.appendChild(row);
+    });
+
+    // bind edit/delete as before...
+  } catch (err) {
+    console.error("Reminder fetch failed:", err);
+    container.innerHTML = `<tr><td colspan="5">Error loading reminders.</td></tr>`;
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadReminders);
+
   // load and render
   async function loadReminders(){
     const res = await fetch("/api/reminders");
@@ -82,60 +127,62 @@ document.addEventListener('DOMContentLoaded', () => {
     openModal(createModal);
   };
 
-  createForm.onsubmit = async e=>{
-    e.preventDefault();
-    const payload = {
-      MedName:      createForm.createMedName.value.trim(),
-      MedDosage:    createForm.createDosage.value.trim(),
-      ReminderTime: createForm.createTime.value,
-      Frequency:    createForm.createFrequency.value
-    };
-    const res = await fetch('/api/reminders', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    if(res.ok){
-      const { ReminderID } = await res.json();
-      // append new row immediately
-      const row = document.createElement('tr');
-      row.dataset.id = ReminderID;
-      row.innerHTML = `
-        <td>${payload.MedName}</td>
-        <td>${payload.MedDosage}</td>
-        <td>${formatTime(payload.ReminderTime)}</td>
-        <td>${payload.Frequency}</td>
-        <td>
-          <button class="btn edit-reminder-btn">Edit</button>
-          <button class="btn btn-danger delete-reminder-btn">Delete</button>
-        </td>`;
-      tableBody.appendChild(row);
-      bindEdit();
-      bindDelete();
-      closeModals();
-    } else {
-      alert('Failed to add reminder');
-    }
+  createForm.onsubmit = async e => {
+  e.preventDefault();
+  const userID = sessionStorage.getItem("userID");
+  if (!userID) {
+    alert("User not logged in.");
+    return;
+  }
+  
+  const payload = {
+    userID: userID,
+    MedName: createForm.createMedName.value.trim(),
+    MedDosage: createForm.createDosage.value.trim(),
+    ReminderTime: createForm.createTime.value,
+    Frequency: createForm.createFrequency.value
   };
 
-  // Edit existing reminder
-  editForm.onsubmit = async e=>{
-    e.preventDefault();
-    const id = editForm.dataset.id;
-    const payload = {
-      MedName:      editForm.editMedName.value.trim(),
-      MedDosage:    editForm.editDosage.value.trim(),
-      ReminderTime: editForm.editTime.value,
-      Frequency:    editForm.editFrequency.value
-    };
-    await fetch(`/api/reminders/${id}`, {
-      method:'PUT',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    closeModals();
-    loadReminders();
+  const res = await fetch("/api/reminders", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    // success handling (e.g., reload list)
+  } else {
+    console.error("Create failed:", await res.text());
+  }
+};
+
+
+editForm.onsubmit = async e => {
+  e.preventDefault();
+  const userID = sessionStorage.getItem("userID");
+  if (!userID) {
+    alert("User not logged in.");
+    return;
+  }
+  const id = editForm.dataset.id; // or however you store ReminderID
+
+  const payload = {
+    userID: userID,
+    MedName: editForm.editMedName.value.trim(),
+    MedDosage: editForm.editDosage.value.trim(),
+    ReminderTime: editForm.editTime.value,
+    Frequency: editForm.editFrequency.value
   };
 
-  loadReminders();
-});
+  const res = await fetch(`/api/reminders/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    // success handling
+  } else {
+    console.error("Update failed:", await res.text());
+  }
+}});

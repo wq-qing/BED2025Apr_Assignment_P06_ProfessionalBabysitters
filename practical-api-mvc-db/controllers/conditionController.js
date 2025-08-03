@@ -3,7 +3,7 @@ const ConditionModel = require("../models/conditionModel");
 const ConditionController = {
   async list(req, res) {
     try {
-      const { id, role } = req.user; // from middleware: { id, role }
+      const { id, role } = req.user; // from middlewares: { id, role }
       const conditions = await ConditionModel.getAllByUser(id, role);
       res.json(conditions);
     } catch (err) {

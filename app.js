@@ -52,7 +52,7 @@ app.get("/reminder", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "reminder.html"));
 });
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "jayden", "html", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "html", "index.html"));
 });
 app.get("/elderlyUserHome", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "elderlyUserHome.html"));
@@ -68,6 +68,9 @@ app.get("/wallet", (req, res) => {
 });
 app.get("/notifications", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "notifications.html"));
+});
+app.get("/signup", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "signup.html"));
 });
 
 // Call/room route handlers (integrated inline)
@@ -249,6 +252,17 @@ sql.connect(dbConfig)
     app.post("/topup", walletController.postTopUp);
     app.get("/transactions", walletController.getTransactions);
     app.get("/last-card", walletController.getLastCard);
+
+    // --- backward-compatible aliases so existing frontend URLs keep working ---
+    app.post("/wallet/topup", walletController.postTopUp);
+    app.get("/wallet/balance", walletController.getBalance);
+    app.get("/wallet/transactions", walletController.getTransactions);
+    app.get("/wallet/last-card", walletController.getLastCard);
+
+    app.post("/payment/pay", paymentController.postPayment);
+    app.get("/notifications", notificationsController.getNotifications);
+    app.post("/notifications/mark-read", notificationsController.markAsRead);
+    // -----------------------------------------------------------------------
 
     // Cron job: low balance notifications
     cron.schedule("*/5 * * * *", async () => {

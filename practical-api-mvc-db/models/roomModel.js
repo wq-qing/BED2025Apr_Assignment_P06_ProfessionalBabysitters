@@ -1,5 +1,5 @@
 // models/roomModel.js
-const { poolPromise, sql } = require("../../dbConfig"); // adjust path if needed
+const { poolPromise, sql } = require("../../db"); // adjust path if needed
 
 module.exports = {
   async markInUse(roomId) {

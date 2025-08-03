@@ -19,8 +19,8 @@ const {
   editReminder,
   removeReminder,
 } = require("./practical-api-mvc-db/controllers/reminderController");
-const validateReminder = require("./practical-api-mvc-db/middleware/validateReminder");
-const errorHandler = require("./practical-api-mvc-db/middleware/reminderErrorHandler");
+const validateReminder = require("./practical-api-mvc-db/middlewares/validateReminder");
+const errorHandler = require("./practical-api-mvc-db/middlewares/reminderErrorHandler");
 
 // Other controllers
 const walletController = require("./practical-api-mvc-db/controllers/walletController");
@@ -30,10 +30,17 @@ const notificationsController = require("./practical-api-mvc-db/controllers/noti
 // Mongo models needed for low-balance cron
 const Wallet = require("./practical-api-mvc-db/models/walletModels");
 
-// New call/room models & validation middleware
+//register controller(Jayden)
+const userController = require("./practical-api-mvc-db/controllers/userController");
+const { validateRegisterUser } = require("./practical-api-mvc-db/middlewares/userValidation");
+//Authentication/ Signin (Jayden)
+const authController = require("./practical-api-mvc-db/controllers/authController");
+const { validateLogin } = require("./practical-api-mvc-db/middlewares/authValidation");
+
+// New call/room models & validation middlewares
 const callLogModel = require("./practical-api-mvc-db/models/callLogModel");
 const roomModel = require("./practical-api-mvc-db/models/roomModel");
-const { requireLogStartFields, requireLogEndFields } = require("./practical-api-mvc-db/middleware/validateCall");
+const { requireLogStartFields, requireLogEndFields } = require("./practical-api-mvc-db/middlewares/validateCall");
 
 // DB config
 const dbConfig = require("./dbConfig");
@@ -237,6 +244,11 @@ sql.connect(dbConfig)
 
     const appointmentController = require("./practical-api-mvc-db/controllers/appointmentController");
 
+    //  Registration Route (Jayden)
+    app.post("/api/register", validateRegisterUser, userController.registerUser);
+    // Authentication Route (Jayden)
+    app.post("/api/login", validateLogin, authController.login);
+
     // Calendar appointment CRUD
     app.post("/api/appointments", appointmentController.create);
     app.get("/api/appointments", appointmentController.read);
@@ -266,6 +278,7 @@ sql.connect(dbConfig)
 
     // Cron job: low balance notifications
     cron.schedule("*/5 * * * *", async () => {
+      console.log("checking for balance")
       try {
         // Find wallets with balance < 50 that haven't been notified
         const lowWallets = await Wallet.find({

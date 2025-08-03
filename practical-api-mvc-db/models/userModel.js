@@ -2,7 +2,7 @@
 
 // models/userModel.js
 const sql = require("mssql");
-const dbConfig = require("../dbConfig");
+const dbConfig = require("../../dbConfig");
 const bcrypt = require("bcrypt");
 
 async function registerUser(userData) {

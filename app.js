@@ -178,6 +178,97 @@ app.get('/api/openRooms', async (req, res) => {
   }
 });
 
+app.post('/api/logCallStart', async (req, res) => {
+  const { roomId, userId, startTime } = req.body;
+  try {
+    const pool = await poolPromise;
+    await pool.request()
+      .input('RoomId', sql.UniqueIdentifier, roomId)
+      .input('UserId', sql.NVarChar(20), userId)
+      .input('StartTime', sql.BigInt, startTime)
+      .query(`
+        INSERT INTO CallLogs (RoomId, UserId, StartTime)
+        VALUES (@RoomId, @UserId, @StartTime)
+      `);
+    res.sendStatus(201);
+  } catch (err) {
+    console.error('❌ Error logging call start:', err);
+    res.status(500).send('Failed to log start');
+  }
+});
+
+app.post('/api/logCallEnd', async (req, res) => {
+  const { roomId, userId, endTime } = req.body;
+
+  console.log('📩 logCallEnd received:', { roomId, userId, endTime });
+
+  if (!roomId || !userId || !endTime) {
+    console.log('❌ Missing fields in request');
+    return res.status(400).send('Missing fields');
+  }
+
+  try {
+    const pool = await poolPromise;
+
+    // Fetch the start time
+    const result = await pool.request()
+      .input('RoomId', sql.UniqueIdentifier, roomId)
+      .input('UserId', sql.NVarChar(20), userId)
+      .query('SELECT StartTime FROM CallLogs WHERE RoomId=@RoomId AND UserId=@UserId');
+
+    if (result.recordset.length === 0) {
+      console.log('❌ No call record found for update');
+      return res.status(404).send('No call record found');
+    }
+
+    const startTime = result.recordset[0].StartTime;
+    const duration = Math.floor((endTime - startTime) / 1000); // seconds
+
+    console.log('🕒 Logging end:', { startTime, endTime, duration });
+
+    await pool.request()
+      .input('RoomId',   sql.UniqueIdentifier, roomId)
+      .input('UserId',   sql.NVarChar(20), userId)
+      .input('EndTime',  sql.BigInt, endTime)
+      .input('Duration', sql.Int, duration)
+      .query(`
+        UPDATE CallLogs
+        SET EndTime = @EndTime,
+            Duration = @Duration
+        WHERE RoomId = @RoomId AND UserId = @UserId
+      `);
+
+    console.log('✅ Call ended and logged');
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.error('❌ SQL error in logCallEnd:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+app.get('/api/callLogs/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const pool = await poolPromise;
+    const result = await pool.request()
+      .input('UserId', sql.NVarChar(20), userId)
+      .query(`
+        SELECT RoomId, StartTime, EndTime, Duration
+        FROM CallLogs
+        WHERE UserId = @UserId
+        ORDER BY StartTime DESC
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('❌ Error fetching call logs:', err);
+    res.status(500).json({ error: 'Failed to retrieve logs' });
+  }
+});
+
+
 app.put('/rooms/:roomId/join', async (req, res) => {
   const roomId = req.params.roomId;
   try {

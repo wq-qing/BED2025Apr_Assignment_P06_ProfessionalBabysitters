@@ -58,6 +58,9 @@ app.get("/calendar", (req, res) => {
 app.get("/wallet", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "wallet.html"));
 });
+app.get("/notifications", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "notifications.html"));
+});
 
 // Connect to databases and mount routes
 sql.connect(dbConfig)

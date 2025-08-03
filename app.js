@@ -52,7 +52,7 @@ app.get("/reminder", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "reminder.html"));
 });
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "jayden", "html", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "html", "index.html"));
 });
 app.get("/elderlyUserHome", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "elderlyUserHome.html"));
@@ -68,6 +68,9 @@ app.get("/wallet", (req, res) => {
 });
 app.get("/notifications", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "notifications.html"));
+});
+app.get("/signup", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "signup.html"));
 });
 
 // Call/room route handlers (integrated inline)

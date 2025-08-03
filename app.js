@@ -22,6 +22,11 @@ const walletController = require("./practical-api-mvc-db/controllers/walletContr
 const paymentController = require("./practical-api-mvc-db/controllers/paymentController");
 const notificationsController = require("./practical-api-mvc-db/controllers/notificationsController");
 
+//register controller
+const userController = require("./controllers/userController");
+const { validateRegisterUser } = require("./middlewares/userValidation");
+
+
 // DB config
 const dbConfig = require("./dbConfig");
 
@@ -55,6 +60,9 @@ app.get("/calendar", (req, res) => {
 sql.connect(dbConfig)
   .then(() => {
     console.log("MSSQL Connected");
+
+    //  Registration Route
+    app.post("/api/register", validateRegisterUser, userController.registerUser);
 
     // Reminder CRUD
     app.get("/api/reminders", listReminders);
@@ -104,3 +112,5 @@ process.on("SIGINT", async () => {
   }
   process.exit(0);
 });
+
+

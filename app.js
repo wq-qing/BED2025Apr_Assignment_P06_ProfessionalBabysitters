@@ -6,6 +6,8 @@ const sql = require("mssql");
 const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
+const mongoose = require("mongoose");
+const cron = require("node-cron");
 
 // Reminder MVC
 const {
@@ -22,15 +24,8 @@ const walletController = require("./practical-api-mvc-db/controllers/walletContr
 const paymentController = require("./practical-api-mvc-db/controllers/paymentController");
 const notificationsController = require("./practical-api-mvc-db/controllers/notificationsController");
 
-//register controller(Jayden)
-const userController = require("./controllers/userController");
-const { validateRegisterUser } = require("./middlewares/userValidation");
-//Authentication/ Signin (Jayden)
-const authController = require("./controllers/authController");
-const { validateLogin } = require("./middlewares/authValidation");
-
-
-
+// Mongo models needed for low-balance cron
+const Wallet = require("./practical-api-mvc-db/models/walletModels");
 
 // DB config
 const dbConfig = require("./dbConfig");
@@ -60,16 +55,25 @@ app.get("/waitingRooms", (req, res) => {
 app.get("/calendar", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "calendar.html"));
 });
+app.get("/wallet", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "wallet.html"));
+});
 
-// Connect to DB and mount routes
+// Connect to databases and mount routes
 sql.connect(dbConfig)
-  .then(() => {
+  .then(async () => {
     console.log("MSSQL Connected");
 
-    //  Registration Route (Jayden)
-    app.post("/api/register", validateRegisterUser, userController.registerUser);
-    // Authentication Route (Jayden)
-    app.post("/api/login", validateLogin, authController.login);
+    // Connect to MongoDB (walletApp)
+    try {
+      await mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://ZariaLxss:5iPhPZXrEuxqMDBL@wallet.7grkver.mongodb.net/walletApp", {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log("✅ MongoDB connected");
+    } catch (mongoErr) {
+      console.error("❌ MongoDB connection failed:", mongoErr);
+    }
 
     // Reminder CRUD
     app.get("/api/reminders", listReminders);
@@ -85,7 +89,6 @@ sql.connect(dbConfig)
     app.put("/api/appointments/:id", appointmentController.update);
     app.delete("/api/appointments/:id", appointmentController.delete);
 
-
     // Notifications / wallet / payment
     app.get("/elderlyUserHome/notifications", notificationsController.getNotifications);
     app.post("/mark-read", notificationsController.markAsRead);
@@ -95,6 +98,35 @@ sql.connect(dbConfig)
     app.post("/topup", walletController.postTopUp);
     app.get("/transactions", walletController.getTransactions);
     app.get("/last-card", walletController.getLastCard);
+
+    // Cron job: low balance notifications
+    cron.schedule("*/5 * * * *", async () => {
+      console.log("🔔 Checking for low balances...");
+      try {
+        // Find wallets with balance < 50 that haven't been notified
+        const lowWallets = await Wallet.find({
+          balance: { $lt: 50 },
+          lowBalanceNotified: false,
+        });
+
+        for (const w of lowWallets) {
+          const msg = `Your wallet balance is low ($${w.balance.toFixed(2)}). Please top up soon.`;
+          // Insert into MSSQL Notifications table
+          await new sql.Request()
+            .input("userId", sql.VarChar, w.userId)
+            .input("message", sql.NVarChar, msg)
+            .query("INSERT INTO Notifications (userId, message) VALUES (@userId, @message)");
+
+          // Mark wallet as notified
+          w.lowBalanceNotified = true;
+          await w.save();
+
+          console.log(`✅ Low-balance notification sent to ${w.userId}: "${msg}"`);
+        }
+      } catch (err) {
+        console.error("Error sending low-balance notifications:", err);
+      }
+    });
 
     // Error handler (after all routes)
     app.use(errorHandler);
@@ -119,5 +151,3 @@ process.on("SIGINT", async () => {
   }
   process.exit(0);
 });
-
-

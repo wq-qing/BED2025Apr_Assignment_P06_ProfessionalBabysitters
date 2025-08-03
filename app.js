@@ -28,6 +28,12 @@ const { validateRegisterUser } = require("./practical-api-mvc-db/middlewares/use
 const authController = require("./practical-api-mvc-db/controllers/authController");
 const { validateLogin } = require("./practical-api-mvc-db/middlewares/authValidation");
 
+// profile mvc
+const { requireAuth } = require("./practical-api-mvc-db/middlewares/authMiddleware");
+const profileController = require("./practical-api-mvc-db/controllers/profileController");
+app.get("/api/profile", requireAuth, profileController.getProfile);
+
+
 // DB config
 const dbConfig = require("./dbConfig");
 

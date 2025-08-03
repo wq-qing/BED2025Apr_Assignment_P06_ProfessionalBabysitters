@@ -1,6 +1,4 @@
-//Jayden
-
-// models/userModel.js
+// practical-api-mvc-db/models/userModel.js
 const sql = require("mssql");
 const dbConfig = require("../../dbConfig");
 const bcrypt = require("bcrypt");
@@ -84,6 +82,42 @@ async function registerUser(userData) {
   }
 }
 
+async function getProfileById(userId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const result = await connection
+      .request()
+      .input("Id", sql.VarChar(10), userId)
+      .query(
+        `SELECT Id, Name, Email, Role
+         FROM Users
+         WHERE Id = @Id`
+      );
+    const row = result.recordset[0];
+    if (!row) return null;
+    // derive username as fallback
+    const username = "@" + (row.Name || "").toLowerCase().replace(/\s+/g, "");
+    return {
+      userId: row.Id,
+      name: row.Name,
+      username,
+      email: row.Email,
+      role: row.Role,
+    };
+  } catch (err) {
+    console.error("❌ Error in getProfileById:", err);
+    throw err;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch {}
+    }
+  }
+}
+
 module.exports = {
-  registerUser
+  registerUser,
+  getProfileById,
 };

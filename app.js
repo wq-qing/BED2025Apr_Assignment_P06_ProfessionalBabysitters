@@ -104,7 +104,6 @@ sql.connect(dbConfig)
 
     // Cron job: low balance notifications
     cron.schedule("*/5 * * * *", async () => {
-      console.log("🔔 Checking for low balances...");
       try {
         // Find wallets with balance < 50 that haven't been notified
         const lowWallets = await Wallet.find({

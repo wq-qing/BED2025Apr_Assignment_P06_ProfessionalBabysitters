@@ -46,6 +46,12 @@ const callLogModel = require("./practical-api-mvc-db/models/callLogModel");
 const roomModel = require("./practical-api-mvc-db/models/roomModel");
 const { requireLogStartFields, requireLogEndFields } = require("./practical-api-mvc-db/middlewares/validateCall");
 
+// profile mvc
+const { requireAuth } = require("./practical-api-mvc-db/middlewares/authMiddleware");
+const profileController = require("./practical-api-mvc-db/controllers/profileController");
+app.get("/api/profile", requireAuth, profileController.getProfile);
+
+
 // DB config
 const dbConfig = require("./dbConfig");
 

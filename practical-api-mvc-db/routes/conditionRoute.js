@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/conditionController");
-const validate = require("../middleware/validateCondition");
-const auth = require("../middleware/authMiddleware");
+const validate = require("../middlewares/validateCondition");
+const auth = require("../middlewares/authMiddleware");
 
 router.get("/", auth, controller.list);
 router.post("/", auth, validate, controller.create);

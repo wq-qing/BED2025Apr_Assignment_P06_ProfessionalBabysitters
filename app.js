@@ -36,6 +36,10 @@ const { validateRegisterUser } = require("./practical-api-mvc-db/middlewares/use
 //Authentication/ Signin (Jayden)
 const authController = require("./practical-api-mvc-db/controllers/authController");
 const { validateLogin } = require("./practical-api-mvc-db/middlewares/authValidation");
+//health history tracker (Jayden)
+const conditionRoute = require("./practical-api-mvc-db/routes/conditionRoute");
+app.use("/api/conditions", require("./practical-api-mvc-db/middleware/extractUserFromToken"), conditionRoute);
+
 
 // New call/room models & validation middlewares
 const callLogModel = require("./practical-api-mvc-db/models/callLogModel");

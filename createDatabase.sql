@@ -24,9 +24,6 @@ CREATE TABLE Appointments (
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
-INSERT INTO Appointments (Date, StartTime, EndTime, Doctor)
-VALUES ('2025-07-18', '14:45', '14:59', 'Doctor John, M');
-
 CREATE TABLE Reminders(
 ReminderId CHAR(3) NOT NULL PRIMARY KEY,
 MedName CHAR(20) NOT NULL,
@@ -34,10 +31,6 @@ MedDosage CHAR(6) NOT NULL,
 ReminderTime CHAR(5) NOT NULL,
 Frequency CHAR(15) NOT NULL
 )
-
-INSERT INTO Reminders(ReminderId, MedName, MedDosage, ReminderTime, Frequency)
-VALUES('1', 'Ibrufen', '2 Tabs', '14:30', '2 Time(s) a day'),
-('2', 'Paracetamol', '2 Tabs', '14:30', '2 Time(s) a day')
 
 CREATE TABLE CallLogs (
   RoomId     UNIQUEIDENTIFIER NOT NULL,

@@ -2,12 +2,17 @@
 try {
   const socket = io();
   const videoGrid = document.getElementById('video-grid');
+  const userId = sessionStorage.getItem('userId');
+  const roomId = window.location.pathname.split('/')[2];
+
 
   window.localStream = null;
   window.peers = {};
   window.myPeer = null;
 
   let myPeer = null;
+
+  socket.emit('join-room', roomId, userId);
 
   function addVideoStream(video, stream) {
     video.srcObject = stream;
@@ -82,6 +87,44 @@ try {
             console.log('🔒 Call closed from', call.peer);
             video.remove();
             delete window.peers[call.peer];
+          });
+        });
+
+        const startTime = Date.now();
+        fetch('/api/logCallStart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId, userId, startTime })
+        }).then(res => {
+          if (!res.ok) throw new Error('Failed to log call start');
+          console.log('📞 Call start logged');
+        }).catch(err => {
+          console.error('❌ Failed to log call start:', err);
+        });
+
+        document.getElementById('endCallBtn')?.addEventListener('click', () => {
+        const endTime = Date.now();
+        if (!roomId || !userId) {
+          console.error('Missing roomId or userId for logCallEnd');
+          return;
+        }
+        fetch('/api/logCallEnd', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId, userId, endTime })
+        })
+          .then(res => {
+            if (!res.ok) throw new Error('Failed to log call end');
+            console.log('✅ Call end logged');
+            // Optional: redirect or close room
+            if (userId.startsWith('D')) {
+            window.location.href = '/doctor';
+          } else {
+            window.location.href = '/elderlyUserHome';
+          }
+          })
+          .catch(err => {
+            console.error('❌ Failed to log call end:', err);
           });
         });
 

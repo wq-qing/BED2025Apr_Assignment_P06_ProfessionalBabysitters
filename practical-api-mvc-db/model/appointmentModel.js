@@ -1,35 +1,5 @@
-// calendarserver.js
+// Kua Zi Liang
 
-const express = require('express');
-const sql     = require('mssql');
-const cors    = require('cors');
-const path    = require('path');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// 1) Serve your static files (HTML/CSS/JS)
-app.use(express.static(path.join(__dirname, '..')));
-
-// 2) Serve calendar.html at root
-app.get('/calendar', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'html', 'calendar.html'));
-});
-
-// 3) SQL Server configuration
-const dbConfig = {
-  user: 'abcd',           
-  password: '12345',      
-  server: 'localhost',
-  database: 'BED_ASG',
-  options: {
-    encrypt: false,
-    trustServerCertificate: true
-  }
-};
-
-// 4) CREATE (POST) → insert new appointment
 app.post('/api/appointments', async (req, res) => {
   const { date, startTime, endTime, doctor } = req.body;
   if (!date || !startTime || !endTime || !doctor) {
@@ -117,10 +87,4 @@ app.delete('/api/appointments/:id', async (req, res) => {
     console.error('❌ SQL Error (DELETE):', err);
     res.status(500).json({ error: 'Database error' });
   }
-});
-
-// 8) Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Calendar API is running on http://localhost:${PORT}/calendar`);
 });

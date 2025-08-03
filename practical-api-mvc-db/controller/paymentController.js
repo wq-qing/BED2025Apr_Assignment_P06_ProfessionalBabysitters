@@ -1,6 +1,6 @@
 // controllers/paymentController.js
-const Wallet = require("../models/walletModels");
-const Transaction = require("../models/transactionModels");
+const Wallet = require("../model/walletModels");
+const Transaction = require("../model/transactionModels");
 
 module.exports = {
   // POST /payment/pay

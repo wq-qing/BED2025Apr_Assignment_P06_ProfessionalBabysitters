@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Health History Tracker</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <style>
-    body { font-family: Lexend, 'Noto Sans', sans-serif; }
-  </style>
+  <link rel="stylesheet" href="css/healthHistory.css" />
 </head>
 <body class="bg-white">
   <div class="flex justify-center py-8">
@@ -41,8 +38,8 @@
         <textarea id="notes" placeholder="Notes" class="form-input w-full p-3 rounded-xl min-h-[100px]"></textarea>
 
         <div class="flex gap-2 justify-end">
-          <button onclick="clearForm()" id="cancelBtn" class="hidden text-sm px-4 py-2 rounded-xl text-blue-600 border border-blue-600">Cancel Edit</button>
-          <button onclick="saveCondition()" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-xl text-sm">Save</button>
+          <button id="cancelBtn" class="hidden text-sm px-4 py-2 rounded-xl text-blue-600 border border-blue-600">Cancel Edit</button>
+          <button id="saveBtn" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-xl text-sm">Save</button>
         </div>
       </div>
 
@@ -52,138 +49,6 @@
     </div>
   </div>
 
-  <script>
-    let editingId = null;
-    let selectedUserId = null;
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(atob(token.split('.')[1])); // extract from JWT
-
-    async function saveCondition() {
-      const payload = {
-        name: document.getElementById("conditionName").value,
-        startDate: document.getElementById("startDate").value,
-        status: document.getElementById("status").value,
-        notes: document.getElementById("notes").value,
-      };
-
-      // Doctor assigns conditions to selected user
-      if (user.role === "Doctor") {
-        payload.userId = selectedUserId;
-        if (!payload.userId) return alert("Select a user first.");
-      }
-
-      const url = editingId
-        ? `http://localhost:3001/api/conditions/${editingId}`
-        : `http://localhost:3001/api/conditions`;
-
-      const method = editingId ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        alert(editingId ? "✅ Updated" : "✅ Saved");
-        clearForm();
-        loadConditions();
-      } else {
-        alert("❌ Failed to save condition");
-      }
-    }
-
-    function populateForm(cond) {
-      document.getElementById("conditionName").value = cond.name;
-      document.getElementById("startDate").value = cond.startDate.split("T")[0];
-      document.getElementById("status").value = cond.status;
-      document.getElementById("notes").value = cond.notes;
-      editingId = cond.id;
-      document.getElementById("cancelBtn").classList.remove("hidden");
-    }
-
-    function clearForm() {
-      document.getElementById("conditionName").value = '';
-      document.getElementById("startDate").value = '';
-      document.getElementById("status").value = '';
-      document.getElementById("notes").value = '';
-      editingId = null;
-      document.getElementById("cancelBtn").classList.add("hidden");
-    }
-
-    async function deleteCondition(id) {
-      const res = await fetch(`http://localhost:3001/api/conditions/${id}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      if (res.ok) {
-        clearForm();
-        loadConditions();
-      } else {
-        alert("❌ Delete failed");
-      }
-    }
-
-    async function loadConditions() {
-      const res = await fetch("http://localhost:3001/api/conditions", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      const data = await res.json();
-      const list = document.getElementById("conditionList");
-      list.innerHTML = "";
-
-      data.forEach(cond => {
-        const div = document.createElement("div");
-        div.className = "p-4 bg-white rounded-xl shadow cursor-pointer";
-        div.onclick = () => populateForm(cond);
-        div.innerHTML = `
-          <div>
-            <p class="font-medium">${cond.name}</p>
-            <p class="text-sm text-gray-600">${cond.status}</p>
-            <p class="text-xs text-gray-400">${cond.startDate?.split('T')[0]}</p>
-            <p class="text-xs italic text-gray-500">${cond.notes}</p>
-          </div>
-          <button onclick="event.stopPropagation(); deleteCondition(${cond.id})" class="mt-2 text-sm px-3 py-1 bg-gray-200 rounded-xl">
-            Delete
-          </button>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    async function loadUserDropdown() {
-      if (user.role !== "Doctor") return;
-
-      document.getElementById("doctorUserSelect").classList.remove("hidden");
-
-      const res = await fetch("http://localhost:3001/api/users", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      const users = await res.json();
-      const selector = document.getElementById("userSelector");
-
-      users.forEach(u => {
-        const option = document.createElement("option");
-        option.value = u.Id;
-        option.textContent = `${u.Name} (${u.Email})`;
-        selector.appendChild(option);
-      });
-
-      selector.onchange = (e) => {
-        selectedUserId = e.target.value;
-        loadConditions();
-      };
-    }
-
-    window.onload = async () => {
-      await loadUserDropdown();
-      loadConditions();
-    };
-  </script>
+  <script src="js/healthHistory.js"></script>
 </body>
 </html>

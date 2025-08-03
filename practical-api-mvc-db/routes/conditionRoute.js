@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../controllers/conditionController");
-const validate = require("../middlewares/validateCondition");
-const auth = require("../middlewares/authMiddleware");
+const conditionController = require("../controllers/conditionController");
+const { requireAuth } = require("../../practical-api-mvc-db/middlewares/authMiddleware");
 
-router.get("/", auth, controller.list);
-router.post("/", auth, validate, controller.create);
-router.put("/:id", auth, validate, controller.update);
-router.delete("/:id", auth, controller.delete);
+router.use(requireAuth);
+
+router.get("/", conditionController.list);
+router.post("/", conditionController.create);
+router.put("/:id", conditionController.update);
+router.delete("/:id", conditionController.delete);
 
 module.exports = router;

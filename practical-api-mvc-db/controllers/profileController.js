@@ -5,9 +5,8 @@ module.exports = {
   async getProfile(req, res) {
     try {
       const profile = await userModel.getProfileById(req.user.userId);
-      if (!profile) {
-        return res.status(404).json({ error: "User not found" });
-      }
+      if (!profile) return res.status(404).json({ error: "User not found" });
+
       res.json({
         Name: profile.name,
         Username: profile.username,

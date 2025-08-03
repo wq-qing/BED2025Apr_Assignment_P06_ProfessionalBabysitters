@@ -31,8 +31,6 @@ const { validateLogin } = require("./practical-api-mvc-db/middlewares/authValida
 // profile mvc
 const { requireAuth } = require("./practical-api-mvc-db/middlewares/authMiddleware");
 const profileController = require("./practical-api-mvc-db/controllers/profileController");
-app.get("/api/profile", requireAuth, profileController.getProfile);
-
 
 // DB config
 const dbConfig = require("./dbConfig");
@@ -45,21 +43,24 @@ const { requireLogStartFields, requireLogEndFields } = require("./practical-api-
 // Mongo model
 const Wallet = require("./practical-api-mvc-db/models/walletModels");
 
-// ✅ health history tracker
+// Health history tracker
 const conditionRoute = require("./practical-api-mvc-db/routes/conditionRoute");
-const extractUser = require("./practical-api-mvc-db/middleware/extractUserFromToken");
+const extractUser = require("./practical-api-mvc-db/middlewares/extractUserFromToken");
 
-const app = express(); // ✅ must come before app.use()
+const app = express(); // must come before app.use / route definitions
 const server = http.createServer(app);
 const io = socketIO(server);
 
-// ✅ Register condition route AFTER app is declared
+// Mount condition route early (depends on extractUser middleware)
 app.use("/api/conditions", extractUser, conditionRoute);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+
+// Profile endpoint (requires auth)
+app.get("/api/profile", requireAuth, profileController.getProfile);
 
 // Static/html routes
 app.get("/reminder", (req, res) => {
@@ -89,6 +90,12 @@ app.get("/signup", (req, res) => {
 app.get("/profile", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "profile.html"));
 });
+app.get("/healthHistory", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "healthHistory.html"));
+});
+
+// make sure dotenv is loaded, and error handler / cors etc are set before
+
 
 // Call/room APIs
 app.get("/api/openRooms", async (req, res) => {
@@ -177,6 +184,7 @@ app.delete("/rooms/:roomId", async (req, res) => {
   }
 });
 
+// Canonical lowercase redirect for /room/:roomId
 app.use("/room/:roomId", (req, res, next) => {
   const canonical = req.params.roomId.toLowerCase();
   if (req.params.roomId !== canonical) {
@@ -233,19 +241,23 @@ sql.connect(dbConfig)
 
     // Low balance cron job
     cron.schedule("*/5 * * * *", async () => {
-      const lowWallets = await Wallet.find({ balance: { $lt: 50 }, lowBalanceNotified: false });
-      for (const w of lowWallets) {
-        const msg = `Your wallet balance is low ($${w.balance.toFixed(2)}). Please top up soon.`;
-        await new sql.Request()
-          .input("userId", sql.VarChar, w.userId)
-          .input("message", sql.NVarChar, msg)
-          .query("INSERT INTO Notifications (userId, message) VALUES (@userId, @message)");
-        w.lowBalanceNotified = true;
-        await w.save();
+      try {
+        const lowWallets = await Wallet.find({ balance: { $lt: 50 }, lowBalanceNotified: false });
+        for (const w of lowWallets) {
+          const msg = `Your wallet balance is low ($${w.balance.toFixed(2)}). Please top up soon.`;
+          await new sql.Request()
+            .input("userId", sql.VarChar, w.userId)
+            .input("message", sql.NVarChar, msg)
+            .query("INSERT INTO Notifications (userId, message) VALUES (@userId, @message)");
+          w.lowBalanceNotified = true;
+          await w.save();
+        }
+      } catch (err) {
+        console.error("Error sending low-balance notifications:", err);
       }
     });
 
-    // Error handler
+    // Error handler (after all routes)
     app.use(errorHandler);
 
     // PeerJS
@@ -270,6 +282,7 @@ sql.connect(dbConfig)
     console.error("Database connection failed:", err);
   });
 
+// Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("Server is shutting down");
   try {

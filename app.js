@@ -9,6 +9,9 @@ const socketIO = require("socket.io");
 const mongoose = require("mongoose");
 const cron = require("node-cron");
 
+// PeerJS
+const { ExpressPeerServer } = require("peer");
+
 // Reminder MVC
 const {
   listReminders,
@@ -26,6 +29,11 @@ const notificationsController = require("./practical-api-mvc-db/controllers/noti
 
 // Mongo models needed for low-balance cron
 const Wallet = require("./practical-api-mvc-db/models/walletModels");
+
+// New call/room models & validation middleware
+const callLogModel = require("./practical-api-mvc-db/models/callLogModel");
+const roomModel = require("./practical-api-mvc-db/models/roomModel");
+const { requireLogStartFields, requireLogEndFields } = require("./practical-api-mvc-db/middleware/validateCall");
 
 // DB config
 const dbConfig = require("./dbConfig");
@@ -58,8 +66,151 @@ app.get("/calendar", (req, res) => {
 app.get("/wallet", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "html", "wallet.html"));
 });
+app.get("/notifications", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "html", "notifications.html"));
+});
 
-// Connect to databases and mount routes
+// Call/room route handlers (integrated inline)
+
+// GET /api/openRooms
+app.get("/api/openRooms", async (req, res) => {
+  try {
+    const roomIds = await callLogModel.getOpenRooms();
+    res.json(roomIds);
+  } catch (err) {
+    console.error('❌ Error fetching open rooms:', err);
+    res.status(500).json([]);
+  }
+});
+
+// POST /api/logCallStart
+app.post("/api/logCallStart", requireLogStartFields, async (req, res) => {
+  const { roomId, userId, startTime } = req.body;
+  try {
+    await callLogModel.insertCallStart({ roomId, userId, startTime });
+    res.sendStatus(201);
+  } catch (err) {
+    console.error('❌ Error logging call start:', err);
+    res.status(500).send('Failed to log start');
+  }
+});
+
+// POST /api/logCallEnd
+app.post("/api/logCallEnd", requireLogEndFields, async (req, res) => {
+  const { roomId, userId, endTime } = req.body;
+
+  console.log('📩 logCallEnd received:', { roomId, userId, endTime });
+
+  if (!roomId || !userId || !endTime) {
+    console.log('❌ Missing fields in request');
+    return res.status(400).send('Missing fields');
+  }
+
+  try {
+    const startRecord = await callLogModel.getCallStart({ roomId, userId });
+
+    if (!startRecord) {
+      console.log('❌ No call record found for update');
+      return res.status(404).send('No call record found');
+    }
+
+    const startTime = startRecord.StartTime;
+    const duration = Math.floor((endTime - startTime) / 1000); // seconds
+
+    console.log('🕒 Logging end:', { startTime, endTime, duration });
+
+    await callLogModel.updateCallEnd({
+      roomId,
+      userId,
+      endTime,
+      duration
+    });
+
+    console.log('✅ Call ended and logged');
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('❌ SQL error in logCallEnd:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// GET /api/callLogs/:userId
+app.get("/api/callLogs/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const logs = await callLogModel.getLogsByUser(userId);
+    res.json(logs);
+  } catch (err) {
+    console.error('❌ Error fetching call logs:', err);
+    res.status(500).json({ error: 'Failed to retrieve logs' });
+  }
+});
+
+// PUT /rooms/:roomId/join
+app.put("/rooms/:roomId/join", async (req, res) => {
+  const roomId = req.params.roomId;
+  try {
+    await roomModel.markInUse(roomId);
+    console.log('→ Room marked in use');
+    res.redirect(`/room/${roomId}`);
+  } catch (err) {
+    console.error('❌ Error joining room:', err);
+    res.status(500).send('Could not join room');
+  }
+});
+
+// POST /rooms
+app.post("/rooms", async (req, res) => {
+  const { doctorId } = req.body;
+  if (!doctorId || !doctorId.startsWith('D')) {
+    return res.status(400).json({ error: 'Invalid doctorId' });
+  }
+  const { v4: uuidV4 } = require('uuid');
+  const roomId = uuidV4().toLowerCase();
+  try {
+    await roomModel.createRoom({ roomId, doctorId });
+    console.log('Inserted room:', roomId, 'for', doctorId);
+    return res.json({ roomId });
+  } catch (err) {
+    console.error('❌ Error creating room:', err);
+    return res.status(500).json({ error: 'Could not create room' });
+  }
+});
+
+// DELETE /rooms/:roomId
+app.delete("/rooms/:roomId", async (req, res) => {
+  const { roomId } = req.params;
+  console.log('DELETE /rooms/' + roomId);
+  try {
+    await roomModel.closeRoom(roomId);
+    console.log('→ Room marked closed (soft-deleted)');
+    return res.sendStatus(204);
+  } catch (err) {
+    console.error('❌ Error in DELETE /rooms/:roomId:', err);
+    return res.sendStatus(500);
+  }
+});
+
+// Canonical lowercase redirect for /room/:roomId
+app.use('/room/:roomId', (req, res, next) => {
+  const original = req.params.roomId;
+  const canonical = original.toLowerCase();
+  if (original !== canonical) {
+    const qs = req.url.slice(req.path.length);
+    return res.redirect(303, `/room/${canonical}${qs}`);
+  }
+  next();
+});
+
+app.set("view engine", "ejs");
+app.get("/doctor", (req, res) => {
+  res.render("doctorHome");
+});
+app.get("/room/:roomId", (req, res) => {
+  res.render("room", { roomId: req.params.roomId });
+});
+
+// Connect to databases and mount remaining routes
 sql.connect(dbConfig)
   .then(async () => {
     console.log("MSSQL Connected");
@@ -112,7 +263,6 @@ sql.connect(dbConfig)
 
     // Cron job: low balance notifications
     cron.schedule("*/5 * * * *", async () => {
-      console.log("🔔 Checking for low balances...");
       try {
         // Find wallets with balance < 50 that haven't been notified
         const lowWallets = await Wallet.find({
@@ -141,6 +291,21 @@ sql.connect(dbConfig)
 
     // Error handler (after all routes)
     app.use(errorHandler);
+
+    // PeerJS server mount
+    const peerServer = ExpressPeerServer(server, { debug: true });
+    app.use("/peerjs", peerServer);
+
+    // Socket.io connection logic (for rooms / real-time)
+    io.on("connection", (socket) => {
+      socket.on("join-room", (roomId, userId) => {
+        socket.join(roomId);
+        socket.to(roomId).emit("user-connected", userId);
+        socket.on("disconnect", () =>
+          socket.to(roomId).emit("user-disconnected", userId)
+        );
+      });
+    });
 
     const port = process.env.PORT || 3000;
     server.listen(port, () => {

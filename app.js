@@ -99,6 +99,17 @@ sql.connect(dbConfig)
     app.get("/transactions", walletController.getTransactions);
     app.get("/last-card", walletController.getLastCard);
 
+    // --- backward-compatible aliases so existing frontend URLs keep working ---
+    app.post("/wallet/topup", walletController.postTopUp);
+    app.get("/wallet/balance", walletController.getBalance);
+    app.get("/wallet/transactions", walletController.getTransactions);
+    app.get("/wallet/last-card", walletController.getLastCard);
+
+    app.post("/payment/pay", paymentController.postPayment);
+    app.get("/notifications", notificationsController.getNotifications);
+    app.post("/notifications/mark-read", notificationsController.markAsRead);
+    // -----------------------------------------------------------------------
+
     // Cron job: low balance notifications
     cron.schedule("*/5 * * * *", async () => {
       console.log("🔔 Checking for low balances...");

@@ -66,29 +66,36 @@
       const email    = e.target.email.value.trim();
       const password = e.target.password.value;
       const confirm  = e.target.confirmPassword.value;
-      const role     = e.target.role.value;           // "Doctor" or "Elderly"
+      const role     = e.target.role.value; // "Doctor" or "Elderly"
 
       if (password !== confirm) {
         return alert('Passwords do not match.');
       }
 
-      // Generate a random 6‑digit numeric string
       const randNum = Math.floor(100000 + Math.random() * 900000);
-      // Prefix with D or E
       const userId = (role === 'Doctor' ? 'D' : 'E') + randNum;
 
       try {
         const res = await fetch('http://localhost:3000/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, fullName, email, password, role })
+          body: JSON.stringify({
+            Id: userId,
+            Name: fullName,
+            Email: email,
+            Password: password,
+            Role: role
+          })
         });
-        if (!res.ok) throw await res.text();
-        alert('Registration successful! Your ID: ' + userId);
+
+        const data = await res.json();
+        if (!res.ok) throw data.error || 'Unknown error';
+        alert('✅ Registration successful! Your ID: ' + userId);
         window.location.href = 'login.html';
+
       } catch (err) {
         console.error(err);
-        alert('Error: ' + err);
+        alert('❌ Error: ' + err);
       }
     });
   </script>

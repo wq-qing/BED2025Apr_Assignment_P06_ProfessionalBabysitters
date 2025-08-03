@@ -1,4 +1,4 @@
-const { poolPromise, sql } = require("../db");
+const { poolPromise, sql } = require("../../dbConfig");
 
 module.exports = {
   async getNotifications(req, res) {

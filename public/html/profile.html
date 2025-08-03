@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../css/profile.css" />
+  <link rel="stylesheet" href="/css/profile.css" />
   <title>Account – Medical App</title>
 </head>
 <body>
-
   <div class="container" id="profileContainer">
     <div class="header">
       <h1>Account</h1>
@@ -17,7 +16,13 @@
       <h2 class="section-title">Profile</h2>
 
       <div class="pic-wrapper">
-        <img id="pfpImg" class="profile-pic" src="/images/profile.jpeg" alt="Profile Picture" />
+        <img
+          id="pfpImg"
+          class="profile-pic"
+          src="/images/profile.jpeg"
+          alt="Profile Picture"
+          onerror="this.src='/images/default-profile.png';"
+        />
         <div class="pic-overlay" onclick="alert('Upload new picture')">
           Change Picture
         </div>
@@ -27,19 +32,19 @@
       <div id="viewInfo">
         <div class="info-row">
           <strong>Name</strong>
-          <span id="nameDisplay">Jayden Koh</span>
+          <span id="nameDisplay">Loading...</span>
         </div>
         <div class="info-row">
           <strong>Username</strong>
-          <span id="usernameDisplay">@Jayden Koh</span>
+          <span id="usernameDisplay">Loading...</span>
         </div>
         <div class="info-row">
           <strong>Email</strong>
-          <span id="emailDisplay">Jaydenkkx07@gmail.com</span>
+          <span id="emailDisplay">Loading...</span>
         </div>
         <div class="info-row">
           <strong>Phone</strong>
-          <span id="phoneDisplay">+65 9788 1890</span>
+          <span id="phoneDisplay">-</span>
         </div>
       </div>
 
@@ -47,19 +52,19 @@
       <div id="editInfo">
         <div class="form-group">
           <label for="nameInput">Name</label>
-          <input type="text" id="nameInput" value="Jayden Koh">
+          <input type="text" id="nameInput" />
         </div>
         <div class="form-group">
           <label for="usernameInput">Username</label>
-          <input type="text" id="usernameInput" value="@Jayden Koh">
+          <input type="text" id="usernameInput" />
         </div>
         <div class="form-group">
           <label for="emailInput">Email</label>
-          <input type="email" id="emailInput" value="Jaydenkkx07@gmail.com">
+          <input type="email" id="emailInput" />
         </div>
         <div class="form-group">
           <label for="phoneInput">Phone</label>
-          <input type="tel" id="phoneInput" value="+65 9788 1890">
+          <input type="tel" id="phoneInput" />
         </div>
       </div>
 
@@ -97,11 +102,12 @@
     </div>
   </div>
 
-<div class="bottom-nav">
+  <div class="bottom-nav">
     <a href="elderlyUserHome" class="nav-button active">🏠<br>Home</a>
     <a href="calendar" class="nav-button">📅<br>Calendar</a>
     <a href="profile" class="nav-button">👤<br>Profile</a>
   </div>
- <script src="/public/js/profile.js"></script>
+
+  <script src="/js/profile.js"></script>
 </body>
 </html>

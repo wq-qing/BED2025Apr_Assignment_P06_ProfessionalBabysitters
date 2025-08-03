@@ -192,7 +192,7 @@ async function fetchUnreadCount() {
 
 // open notifications page
 document.querySelector("#viewNotificationsBtn")?.addEventListener("click", () => {
-  window.location.href = "/notifications.html?userId=" + encodeURIComponent(userId);
+  window.location.href = "/notifications?userId=" + encodeURIComponent(userId);
 });
 
 // refresh unread count periodically

@@ -92,7 +92,7 @@
     // notifications navigation (preserves userId)
     document.getElementById("viewNotificationsBtn").addEventListener("click", () => {
       const userId = "user123"; // if dynamic, replace
-      window.location.href = `/notifications.html?userId=${encodeURIComponent(userId)}`;
+      window.location.href = `/notifications?userId=${encodeURIComponent(userId)}`;
     });
   </script>
 </body>

@@ -1,7 +1,7 @@
 const sql = require("mssql");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const dbConfig = require("../dbConfig");
+const dbConfig = require("../../dbConfig");
 
 async function login(req, res) {
   const { email, password } = req.body;

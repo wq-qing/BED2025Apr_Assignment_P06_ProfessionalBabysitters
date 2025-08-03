@@ -1,6 +1,6 @@
 //Jayden
 
-const userModel = require("../models/userModel"); 
+const userModel = require("../../models/userModel"); 
 const Joi = require("joi");
 
 const registerUserSchema = Joi.object({

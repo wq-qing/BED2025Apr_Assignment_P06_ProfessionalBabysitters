@@ -88,13 +88,9 @@
           if (!res.ok) throw new Error(data.error || "Login failed");
 
           alert("Login successful! Welcome " + data.user.Name);
+          window.location.href = 'ElderlyUserHome.html';
 
-          // Optional redirection based on role
-          if (data.user.Role === "Doctor") {
-            window.location.href = "doctorHome.html";
-          } else {
-            window.location.href = "elderlyUserHome.html";
-          }
+
         } catch (err) {
           alert("Error: " + err.message);
         }

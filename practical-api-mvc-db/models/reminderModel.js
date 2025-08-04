@@ -1,19 +1,15 @@
 const sql = require("mssql");
 
-async function getAllReminders() {
-  const userId = sessionStorage.getItem('userID'); // this is client-side; this function likely should accept userID instead
-  const result = await sql.query(`
-    SELECT ReminderID, MedName, MedDosage,
-      CONVERT(VARCHAR(5), ReminderTime, 108) AS ReminderTime,
-      Frequency
-    FROM Reminders
-    WHERE UserID = ${userID}
-  `);
-  return result.recordset;
-}
-
 async function getRemindersByUser(userID) {
   if (!userID) throw new Error("getRemindersByUser: userID missing");
+
+  const userExists = await ensureUserExists(userID);
+  if (!userExists) {
+    const err = new Error("User not present");
+    err.code = "NO_USER";
+    throw err;
+  }
+
   const result = await sql.query`
     SELECT ReminderID, MedName, MedDosage,
       CONVERT(VARCHAR(5), ReminderTime, 108) AS ReminderTime,
@@ -51,17 +47,8 @@ async function createReminder({ userID, MedName, MedDosage, ReminderTime, Freque
   const nextNum = (maxRes.recordset[0].maxNum || 0) + 1;
   const newId = "R" + nextNum.toString().padStart(2, "0");
 
-  console.log("Inserting reminder with:", {
-    newId,
-    userID,
-    MedName,
-    MedDosage,
-    ReminderTime,
-    Frequency,
-  });
-
   await sql.query`
-    INSERT INTO Reminders (ReminderID, userID, MedName, MedDosage, ReminderTime, Frequency)
+    INSERT INTO Reminders (ReminderID, UserID, MedName, MedDosage, ReminderTime, Frequency)
     VALUES (${newId}, ${userID}, ${MedName}, ${MedDosage}, ${ReminderTime}, ${Frequency})
   `;
 
@@ -86,7 +73,7 @@ async function updateReminder(id, userID, { MedName, MedDosage, ReminderTime, Fr
       MedDosage = ${MedDosage},
       ReminderTime = ${ReminderTime},
       Frequency = ${Frequency}
-    WHERE ReminderID = ${id} AND userID = ${userID}
+    WHERE ReminderID = ${id} AND UserID = ${userID}
   `;
   return result.rowsAffected[0];
 }
@@ -104,7 +91,7 @@ async function deleteReminder(id, userID) {
   }
 
   const result = await sql.query`
-    DELETE FROM Reminders WHERE ReminderID = ${id} AND userID = ${userID}
+    DELETE FROM Reminders WHERE ReminderID = ${id} AND UserID = ${userID}
   `;
   return result.rowsAffected[0];
 }

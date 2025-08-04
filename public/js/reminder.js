@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch(`/api/reminders?userID=${encodeURIComponent(userID)}`);
+      const res = await fetch(`/api/reminders/${encodeURIComponent(userID)}`);
       let data;
       const text = await res.text();
       try {
@@ -118,10 +118,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const reminders = Array.isArray(data) ? data : [];
 
       if (!reminders.length) {
-        container.innerHTML = `<tr><td colspan="5">User not present.</td></tr>`;
-        showUserNotFoundMessage();
+        container.innerHTML = `<tr><td colspan="5">No reminders found.</td></tr>`;
+        document.getElementById("userNotFoundMsg")?.remove();
         return;
       }
+
 
       container.innerHTML = ""; // clear
 

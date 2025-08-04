@@ -10,12 +10,6 @@ const cron = require("node-cron");
 const { ExpressPeerServer } = require("peer");
 
 // Reminder MVC
-const {
-  listReminders,
-  addReminder,
-  editReminder,
-  removeReminder,
-} = require("./practical-api-mvc-db/controllers/reminderController");
 const validateReminder = require("./practical-api-mvc-db/middlewares/validateReminder");
 const errorHandler = require("./practical-api-mvc-db/middlewares/reminderErrorHandler");
 
@@ -212,7 +206,7 @@ sql.connect(dbConfig)
       console.error("❌ MongoDB connection failed:", mongoErr);
     }
 
-        const {
+      const {
       listRemindersForUser,
       addReminder,
       editReminder,
@@ -220,11 +214,11 @@ sql.connect(dbConfig)
     } = require("./practical-api-mvc-db/controllers/reminderController");
 
     // Reminders
-    app.get("/api/reminders", listReminders);
-    app.post("/api/reminders", validateReminder, addReminder);
-    app.put("/api/reminders/:id", validateReminder, editReminder);
+    app.get("/api/reminders/:userID", listRemindersForUser); // ✅ only this user's reminders
+
+    app.post("/api/reminders", addReminder);
+    app.put("/api/reminders/:id", editReminder);
     app.delete("/api/reminders/:id", removeReminder);
-    app.get("/api/reminders/:userId", listRemindersForUser);
 
 
     // Appointments

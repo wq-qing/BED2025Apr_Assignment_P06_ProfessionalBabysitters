@@ -97,7 +97,6 @@ async function deleteReminder(id, userID) {
 }
 
 module.exports = {
-  getAllReminders,
   createReminder,
   updateReminder,
   deleteReminder,

@@ -1,13 +1,16 @@
 // models/reminderModel.js
 const sql = require("mssql");
 
-async function getAllReminders() {
-  const result = await sql.query(`
+async function getRemindersByUser(userID) {
+  if (!userID) throw new Error("getRemindersByUser: userID is required");
+
+  const result = await sql.query`
     SELECT ReminderID, MedName, MedDosage,
       CONVERT(VARCHAR(5), ReminderTime, 108) AS ReminderTime,
       Frequency
     FROM Reminders
-  `);
+    WHERE UserID = ${userID}
+  `;
   return result.recordset;
 }
 
@@ -33,7 +36,6 @@ async function createReminder({ userID, MedName, MedDosage, ReminderTime, Freque
     Frequency,
   });
 
-  // explicit parameterization via tagged template
   await sql.query`
     INSERT INTO Reminders (ReminderID, userID, MedName, MedDosage, ReminderTime, Frequency)
     VALUES (${newId}, ${userID}, ${MedName}, ${MedDosage}, ${ReminderTime}, ${Frequency})
@@ -68,7 +70,7 @@ async function deleteReminder(id, userID) {
 }
 
 module.exports = {
-  getAllReminders,
+  getRemindersByUser,
   createReminder,
   updateReminder,
   deleteReminder,

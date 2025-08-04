@@ -17,19 +17,24 @@ CREATE TABLE Users (
 
 CREATE TABLE Appointments (
     AppointmentID INT IDENTITY(1,1) PRIMARY KEY,
+    UserID VARCHAR(10) NOT NULL,
     Date DATE NOT NULL,
     StartTime CHAR(5) NOT NULL,   -- e.g., '14:45'
     EndTime CHAR(5) NOT NULL,     -- e.g., '14:59'
     Doctor VARCHAR(50) NOT NULL,
-    CreatedAt DATETIME DEFAULT GETDATE()
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_Appointments_User FOREIGN KEY (UserID) REFERENCES [Users](ID)
 );
 
+
 CREATE TABLE Reminders(
-ReminderId CHAR(3) NOT NULL PRIMARY KEY,
-MedName CHAR(20) NOT NULL,
-MedDosage CHAR(6) NOT NULL,
-ReminderTime CHAR(5) NOT NULL,
-Frequency CHAR(15) NOT NULL
+    ReminderId CHAR(3) NOT NULL PRIMARY KEY,
+    MedName CHAR(20) NOT NULL,
+    MedDosage CHAR(6) NOT NULL,
+    ReminderTime CHAR(5) NOT NULL,
+    Frequency CHAR(15) NOT NULL,
+    CONSTRAINT FK_Reminders_User FOREIGN KEY (UserID) REFERENCES [Users](ID)
+
 )
 
 CREATE TABLE CallLogs (

@@ -1,9 +1,19 @@
-// models/reminderModel.js
 const sql = require("mssql");
 
-async function getRemindersByUser(userID) {
-  if (!userID) throw new Error("getRemindersByUser: userID is required");
+async function getAllReminders() {
+  const userId = sessionStorage.getItem('userID'); // this is client-side; this function likely should accept userID instead
+  const result = await sql.query(`
+    SELECT ReminderID, MedName, MedDosage,
+      CONVERT(VARCHAR(5), ReminderTime, 108) AS ReminderTime,
+      Frequency
+    FROM Reminders
+    WHERE UserID = ${userID}
+  `);
+  return result.recordset;
+}
 
+async function getRemindersByUser(userID) {
+  if (!userID) throw new Error("getRemindersByUser: userID missing");
   const result = await sql.query`
     SELECT ReminderID, MedName, MedDosage,
       CONVERT(VARCHAR(5), ReminderTime, 108) AS ReminderTime,
@@ -14,9 +24,23 @@ async function getRemindersByUser(userID) {
   return result.recordset;
 }
 
+async function ensureUserExists(userID) {
+  const res = await sql.query`
+    SELECT 1 FROM Users WHERE ID = ${userID}
+  `;
+  return res.recordset.length > 0;
+}
+
 async function createReminder({ userID, MedName, MedDosage, ReminderTime, Frequency }) {
   if (!userID) {
     throw new Error("createReminder: userID is missing or falsy");
+  }
+
+  const userExists = await ensureUserExists(userID);
+  if (!userExists) {
+    const err = new Error("User not present");
+    err.code = "NO_USER";
+    throw err;
   }
 
   // generate ReminderID like R01, R02...
@@ -48,6 +72,14 @@ async function updateReminder(id, userID, { MedName, MedDosage, ReminderTime, Fr
   if (!userID) {
     throw new Error("updateReminder: userID is missing");
   }
+
+  const userExists = await ensureUserExists(userID);
+  if (!userExists) {
+    const err = new Error("User not present");
+    err.code = "NO_USER";
+    throw err;
+  }
+
   const result = await sql.query`
     UPDATE Reminders SET
       MedName = ${MedName},
@@ -63,6 +95,14 @@ async function deleteReminder(id, userID) {
   if (!userID) {
     throw new Error("deleteReminder: userID is missing");
   }
+
+  const userExists = await ensureUserExists(userID);
+  if (!userExists) {
+    const err = new Error("User not present");
+    err.code = "NO_USER";
+    throw err;
+  }
+
   const result = await sql.query`
     DELETE FROM Reminders WHERE ReminderID = ${id} AND userID = ${userID}
   `;
@@ -70,8 +110,9 @@ async function deleteReminder(id, userID) {
 }
 
 module.exports = {
-  getRemindersByUser,
+  getAllReminders,
   createReminder,
   updateReminder,
   deleteReminder,
+  getRemindersByUser,
 };

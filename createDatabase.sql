@@ -34,7 +34,6 @@ CREATE TABLE Reminders(
     ReminderTime CHAR(5) NOT NULL,
     Frequency CHAR(15) NOT NULL,
     CONSTRAINT FK_Reminders_User FOREIGN KEY (UserID) REFERENCES [Users](ID)
-
 )
 
 CREATE TABLE CallLogs (

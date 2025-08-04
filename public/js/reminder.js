@@ -35,6 +35,48 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
   }
 
+  // Toast / inline messages
+  function showToast(msg, isError = false) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add("show"));
+    setTimeout(() => t.classList.remove("show"), 3000);
+    setTimeout(() => t.remove(), 3400);
+    if (isError) {
+      t.style.background = "#d9534f";
+      t.style.color = "white";
+    } else {
+      t.style.background = "#5cb85c";
+      t.style.color = "white";
+    }
+  }
+  function showUserNotFoundMessage() {
+    if (document.getElementById("userNotFoundMsg")) return;
+    const msg = document.createElement("div");
+    msg.id = "userNotFoundMsg";
+    msg.style.background = "#fde2e2";
+    msg.style.border = "1px solid #d9534f";
+    msg.style.padding = "10px";
+    msg.style.marginTop = "10px";
+    msg.style.borderRadius = "4px";
+    msg.textContent = "User not present. Please register or use a valid user.";
+    tableBody.closest(".container")?.prepend(msg);
+  }
+  function showDoctorBlockedMessage() {
+    if (document.getElementById("doctorBlockedMsg")) return;
+    const msg = document.createElement("div");
+    msg.id = "doctorBlockedMsg";
+    msg.style.background = "#fde2e2";
+    msg.style.border = "1px solid #d9534f";
+    msg.style.padding = "10px";
+    msg.style.marginTop = "10px";
+    msg.style.borderRadius = "4px";
+    msg.textContent = "Doctors are not allowed to manage reminders.";
+    tableBody.closest(".container")?.prepend(msg);
+  }
+
   // Load reminders for current session userID
   async function loadReminders() {
     const userID = sessionStorage.getItem("userID");
@@ -45,13 +87,39 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (userID.startsWith("D")) {
+      container.innerHTML = `<tr><td colspan="5">Doctors are not allowed.</td></tr>`;
+      showDoctorBlockedMessage();
+      return;
+    }
+
     try {
       const res = await fetch(`/api/reminders?userID=${encodeURIComponent(userID)}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      const reminders = await res.json();
+      let data;
+      const text = await res.text();
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
 
-      if (!Array.isArray(reminders) || reminders.length === 0) {
-        container.innerHTML = `<tr><td colspan="5">No reminders set.</td></tr>`;
+      // user not present case from API
+      if (!res.ok && data && data.error && data.error.toLowerCase().includes("user")) {
+        showToast("User not present", true);
+        showUserNotFoundMessage();
+        container.innerHTML = `<tr><td colspan="5">User not present.</td></tr>`;
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(text || "Failed to fetch");
+      }
+
+      const reminders = Array.isArray(data) ? data : [];
+
+      if (!reminders.length) {
+        container.innerHTML = `<tr><td colspan="5">User not present.</td></tr>`;
+        showUserNotFoundMessage();
         return;
       }
 
@@ -103,14 +171,29 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.onclick = async () => {
         if (!confirm("Delete this reminder?")) return;
         const id = btn.closest("tr")?.dataset.id;
+        const userID = sessionStorage.getItem("userID");
         if (!id) return;
+        if (!userID) {
+          alert("User not logged in.");
+          return;
+        }
+        if (userID.startsWith("D")) {
+          showToast("Doctors are not allowed.", true);
+          showDoctorBlockedMessage();
+          return;
+        }
         const res = await fetch(`/api/reminders/${id}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userID: sessionStorage.getItem("userID") }),
+          body: JSON.stringify({ userID }),
         });
         if (!res.ok) {
-          console.error("Delete failed:", await res.text());
+          const text = await res.text();
+          console.error("Delete failed:", text);
+          if (res.status === 404 && text.toLowerCase().includes("user")) {
+            showToast("User not present", true);
+            showUserNotFoundMessage();
+          }
         }
         await loadReminders();
       };
@@ -134,6 +217,11 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("User not logged in.");
         return;
       }
+      if (userID.startsWith("D")) {
+        showToast("Doctors are not allowed.", true);
+        showDoctorBlockedMessage();
+        return;
+      }
 
       const payload = {
         userID: userID,
@@ -150,11 +238,23 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(payload),
         });
 
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = null;
+        }
+
         if (res.ok) {
           closeModals();
           await loadReminders();
         } else {
-          console.error("Create failed:", await res.text());
+          console.error("Create failed:", text);
+          if (res.status === 404 && data && data.error && data.error.toLowerCase().includes("user")) {
+            showToast("User not present", true);
+            showUserNotFoundMessage();
+          }
         }
       } catch (err) {
         console.error("Create error:", err);
@@ -171,6 +271,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const userID = sessionStorage.getItem("userID");
       if (!userID) {
         alert("User not logged in.");
+        return;
+      }
+      if (userID.startsWith("D")) {
+        showToast("Doctors are not allowed.", true);
+        showDoctorBlockedMessage();
         return;
       }
       const id = editForm.dataset.id;
@@ -194,11 +299,23 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(payload),
         });
 
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = null;
+        }
+
         if (res.ok) {
           closeModals();
           await loadReminders();
         } else {
-          console.error("Update failed:", await res.text());
+          console.error("Update failed:", text);
+          if (res.status === 404 && data && data.error && data.error.toLowerCase().includes("user")) {
+            showToast("User not present", true);
+            showUserNotFoundMessage();
+          }
         }
       } catch (err) {
         console.error("Update error:", err);

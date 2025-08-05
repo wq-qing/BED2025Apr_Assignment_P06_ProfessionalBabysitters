@@ -54,7 +54,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Profile endpoint (requires auth)
-app.get("/api/profile", requireAuth, profileController.getProfile);
+app.get('/api/profile/:userID', profileController.getProfileById);
+app.put('/api/profile/:userID', profileController.updateProfileById);
 
 // Static/html routes
 app.get("/reminder", (req, res) => {

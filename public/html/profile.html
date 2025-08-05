@@ -35,16 +35,12 @@
           <span id="nameDisplay">Loading...</span>
         </div>
         <div class="info-row">
-          <strong>Username</strong>
-          <span id="usernameDisplay">Loading...</span>
-        </div>
-        <div class="info-row">
           <strong>Email</strong>
           <span id="emailDisplay">Loading...</span>
         </div>
         <div class="info-row">
-          <strong>Phone</strong>
-          <span id="phoneDisplay">-</span>
+          <strong>Role</strong>
+          <span id="roleDisplay">Loading...</span>
         </div>
       </div>
 
@@ -53,18 +49,14 @@
         <div class="form-group">
           <label for="nameInput">Name</label>
           <input type="text" id="nameInput" />
-        </div>
-        <div class="form-group">
-          <label for="usernameInput">Username</label>
-          <input type="text" id="usernameInput" />
-        </div>
+        </div>        
         <div class="form-group">
           <label for="emailInput">Email</label>
           <input type="email" id="emailInput" />
         </div>
         <div class="form-group">
-          <label for="phoneInput">Phone</label>
-          <input type="tel" id="phoneInput" />
+          <label for="phoneInput">Role</label>
+          <input type="text" id="roleInput" />
         </div>
       </div>
 
@@ -97,7 +89,7 @@
         <span>Language</span><span>→</span>
       </div>
       <div style="text-align:center; margin-top:15px;">
-        <button class="btn btn-danger" onclick="alert('Logging out...')">Log out</button>
+        <button class="btn btn-danger" onclick="alert('Logging out...'), window.location.href='/'">Log out</button>
       </div>
     </div>
   </div>

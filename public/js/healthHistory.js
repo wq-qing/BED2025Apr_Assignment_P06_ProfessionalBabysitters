@@ -5,11 +5,18 @@ function getTokenPayload() {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
-    return JSON.parse(atob(parts[1]));
+    const payload = JSON.parse(atob(parts[1]));
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp && now > payload.exp) {
+      localStorage.removeItem("token");
+      return null;
+    }
+    return payload;
   } catch {
     return null;
   }
 }
+
 
 let editingId = null;
 let selectedUserId = null;

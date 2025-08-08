@@ -21,6 +21,10 @@ const userController = require("./practical-api-mvc-db/controllers/userControlle
 const { validateRegisterUser } = require("./practical-api-mvc-db/middlewares/userValidation");
 const authController = require("./practical-api-mvc-db/controllers/authController");
 const { validateLogin } = require("./practical-api-mvc-db/middlewares/authValidation");
+const healthHistoryMiddleware = require("./practical-api-mvc-db/middlewares/healthHistoryMiddleware");
+const healthHistoryController = require("./practical-api-mvc-db/controllers/healthHistoryController");
+
+
 
 // profile mvc
 const { requireAuth } = require("./practical-api-mvc-db/middlewares/authMiddleware");
@@ -55,6 +59,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Profile endpoint (requires auth)
 app.get("/api/profile", requireAuth, profileController.getProfile);
+
+//Jayden healthHistory
+app.get("/api/users", healthHistoryMiddleware, healthHistoryController.getElderlyUsers);
 
 // Static/html routes
 app.get("/reminder", (req, res) => {

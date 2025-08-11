@@ -117,7 +117,34 @@ async function getProfileById(userId) {
   }
 }
 
+async function updateProfileById(userId, { Name, Email, Role }) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const result = await connection
+      .request()
+      .input("Id", sql.VarChar(10), userId)
+      .input("Name", sql.NVarChar(100), Name)
+      .input("Email", sql.VarChar(100), Email)
+      .input("Role", sql.VarChar(20), Role)
+      .query(`
+        UPDATE Users
+        SET Name = @Name, Email = @Email, Role = @Role
+        WHERE Id = @Id
+      `);
+    return result.rowsAffected[0] > 0;
+  } catch (err) {
+    console.error("❌ Error in updateProfileById:", err);
+    throw err;
+  } finally {
+    if (connection) {
+      try { await connection.close(); } catch {}
+    }
+  }
+}
+
 module.exports = {
   registerUser,
   getProfileById,
+  updateProfileById,
 };

@@ -1,19 +1,18 @@
 // public/js/profile.js
 document.addEventListener("DOMContentLoaded", () => {
-  const container       = document.getElementById("profileContainer");
-  const toggleBtn       = document.getElementById("toggleEditBtn");
-  const saveBtn         = document.getElementById("saveBtn");
-  const cancelBtn       = document.getElementById("cancelBtn");
+  const container   = document.getElementById("profileContainer");
+  const toggleBtn   = document.getElementById("toggleEditBtn");
+  const saveBtn     = document.getElementById("saveBtn");
+  const cancelBtn   = document.getElementById("cancelBtn");
 
-  const nameInput       = document.getElementById("nameInput");
-  const nameDisplay     = document.getElementById("nameDisplay");
-  const usernameInput   = document.getElementById("usernameInput");
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  const emailInput      = document.getElementById("emailInput");
-  const emailDisplay    = document.getElementById("emailDisplay");
-  const phoneInput      = document.getElementById("phoneInput");
-  const phoneDisplay    = document.getElementById("phoneDisplay");
-
+  const nameInput   = document.getElementById("nameInput");
+  const nameDisplay = document.getElementById("nameDisplay");
+  const emailInput  = document.getElementById("emailInput");
+  const emailDisplay = document.getElementById("emailDisplay");
+  const roleInput   = document.getElementById("roleInput");
+  const roleDisplay = document.getElementById("roleDisplay");
+  
+  // Switch between view/edit
   toggleBtn.addEventListener("click", () => {
     container.classList.add("editing");
   });
@@ -21,39 +20,57 @@ document.addEventListener("DOMContentLoaded", () => {
     container.classList.remove("editing");
   });
 
-  saveBtn.addEventListener("click", () => {
-    nameDisplay.textContent     = nameInput.value;
-    usernameDisplay.textContent = usernameInput.value;
-    emailDisplay.textContent    = emailInput.value;
-    phoneDisplay.textContent    = phoneInput.value;
-    container.classList.remove("editing");
-    alert("Profile updated!");
+  // Save changes
+  saveBtn.addEventListener("click", async () => {
+    const userID = sessionStorage.getItem("userID");
+    if (!userID) return alert("Not logged in!");
+
+    // Send update to backend (optional, you can add API endpoint)
+    try {
+      const res = await fetch(`/api/profile/${userID}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Name: nameInput.value,
+          Email: emailInput.value,
+          Role: roleInput.value,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      // Update UI
+      nameDisplay.textContent = nameInput.value;
+      emailDisplay.textContent = emailInput.value;
+      roleDisplay.textContent = roleInput.value;
+      container.classList.remove("editing");
+      alert("Profile updated!");
+    } catch (err) {
+      alert("Error updating profile");
+    }
   });
 
+  // Load profile info
   async function loadProfile() {
-    const token = localStorage.getItem("token");
-    if (!token) return console.warn("No auth token");
+    const userID = sessionStorage.getItem("userID");
+    if (!userID) {
+      alert("Please log in!");
+      window.location.href = "/";
+      return;
+    }
     try {
-      const res = await fetch("/api/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
-        console.error("Failed to load profile", res.status);
-        return;
-      }
-      const p = await res.json();
-      nameDisplay.textContent     = p.Name || "";
-      usernameDisplay.textContent = p.Username || "";
-      emailDisplay.textContent    = p.Email || "";
-      // phone not in your current schema; left blank unless you store it elsewhere
-      phoneDisplay.textContent    = p.Phone || "-";
+      const res = await fetch(`/api/profile/${userID}`);
+      if (!res.ok) throw new Error("Failed to load profile");
 
-      nameInput.value     = p.Name || "";
-      usernameInput.value = p.Username || "";
-      emailInput.value    = p.Email || "";
-      phoneInput.value    = p.Phone || "";
+      const p = await res.json();
+      nameDisplay.textContent  = p.Name || "";
+      emailDisplay.textContent = p.Email || "";
+      roleDisplay.textContent  = p.Role || "";
+
+      nameInput.value  = p.Name || "";
+      emailInput.value = p.Email || "";
+      roleInput.value  = p.Role || "";
     } catch (err) {
-      console.error("Error fetching profile:", err);
+      alert("Error loading profile");
     }
   }
 
